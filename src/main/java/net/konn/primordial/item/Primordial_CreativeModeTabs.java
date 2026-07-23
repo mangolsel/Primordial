@@ -34,6 +34,7 @@ public class Primordial_CreativeModeTabs {
                     .displayItems((itemDisplayParameters, output) -> {
                         output.accept(Primordial_Blocks.TIN_BLOCK);
                         output.accept(Primordial_Blocks.RAW_CASSITERITE_BLOCK);
+                        output.accept(Primordial_Blocks.GNEIS_CASSITERITE_ORE);
                     })
                     .build());
 
