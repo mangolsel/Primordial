@@ -8,6 +8,6 @@ public class Primordial_FoodProperties {
     public static final FoodProperties CORN = new FoodProperties.Builder()
             .nutrition(3)
             .saturationModifier(0.25f)
-            .effect(()->new MobEffectInstance(MobEffects.HEALTH_BOOST, 600), 0.65f)
+            .effect(()->new MobEffectInstance(MobEffects.HEALTH_BOOST, 600), 1.0f)
             .build();
 }
