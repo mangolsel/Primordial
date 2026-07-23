@@ -1,6 +1,7 @@
 package net.konn.primordial.block;
 
 import net.konn.primordial.PrimordialMod;
+import net.konn.primordial.block.custom.MagicBlock;
 import net.konn.primordial.item.Primordial_Items;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
@@ -18,6 +19,9 @@ public class Primordial_Blocks {
     public static final DeferredRegister.Blocks BLOCKS =
             DeferredRegister.createBlocks(PrimordialMod.MOD_ID);
 
+    public static final DeferredBlock<Block> MAGIC_BLOCK = registerBlock("magic_block",
+            ()-> new MagicBlock(BlockBehaviour.Properties.of()
+                    .strength(4f).requiresCorrectToolForDrops()));
     public static final DeferredBlock<Block> TIN_BLOCK = registerBlock("tin_block",
             ()-> new Block(BlockBehaviour.Properties.of()
                     .strength(4f).requiresCorrectToolForDrops()));

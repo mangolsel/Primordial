@@ -5,7 +5,9 @@
   "item.primordial.tin_ingot": "Tin Ingot",
   "item.primordial.raw_cassiterite": "Raw Cassiterite",
   "item.primordial.chainsaw": "Chainsaw",
+  "item.primordial.corn": "Corn",
 
+  "block.primordial.magic_block": "Magic Block",
   "block.primordial.tin_block": "Tin Block",
   "block.primordial.raw_cassiterite_block": "Raw Cassiterite Block",
   "block.primordial.gneis_cassiterite_ore": "Gneis Cassiterite Ore"

@@ -25,6 +25,7 @@ public class Primordial_CreativeModeTabs {
                         output.accept(Primordial_Items.TIN_INGOT);
                         output.accept(Primordial_Items.RAW_CASSITERITE);
                         output.accept(Primordial_Items.CHAINSAW);
+                        output.accept(Primordial_Items.CORN);
                     })
                     .build());
 
@@ -33,6 +34,7 @@ public class Primordial_CreativeModeTabs {
                     .title(Component.translatable("itemsGroup.primordial.primordial_blocks_tab"))
                     .icon(()->new ItemStack(Primordial_Blocks.TIN_BLOCK.get()))
                     .displayItems((itemDisplayParameters, output) -> {
+                        output.accept(Primordial_Blocks.MAGIC_BLOCK);
                         output.accept(Primordial_Blocks.TIN_BLOCK);
                         output.accept(Primordial_Blocks.RAW_CASSITERITE_BLOCK);
                         output.accept(Primordial_Blocks.GNEIS_CASSITERITE_ORE);

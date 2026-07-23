@@ -14,6 +14,8 @@ public class Primordial_Items {
     public static final DeferredItem<Item> RAW_CASSITERITE = ITEMS.registerSimpleItem("raw_cassiterite");
     public static final DeferredItem<Item> CHAINSAW =
             ITEMS.registerItem("chainsaw", ChainsawItem::new, new Item.Properties().durability(32));
+    public static final DeferredItem<Item> CORN =
+            ITEMS.registerItem("corn",Item::new, new Item.Properties().food(Primordial_FoodProperties.CORN));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
