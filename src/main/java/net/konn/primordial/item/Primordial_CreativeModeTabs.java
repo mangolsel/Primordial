@@ -24,6 +24,7 @@ public class Primordial_CreativeModeTabs {
                     .displayItems((itemDisplayParameters, output) -> {
                         output.accept(Primordial_Items.TIN_INGOT);
                         output.accept(Primordial_Items.RAW_CASSITERITE);
+                        output.accept(Primordial_Items.CHAINSAW);
                     })
                     .build());
 

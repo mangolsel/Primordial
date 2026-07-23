@@ -1,6 +1,7 @@
 package net.konn.primordial.item;
 
 import net.konn.primordial.PrimordialMod;
+import net.konn.primordial.item.custom.ChainsawItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -11,6 +12,8 @@ public class Primordial_Items {
 
     public static final DeferredItem<Item> TIN_INGOT = ITEMS.registerSimpleItem("tin_ingot");
     public static final DeferredItem<Item> RAW_CASSITERITE = ITEMS.registerSimpleItem("raw_cassiterite");
+    public static final DeferredItem<Item> CHAINSAW =
+            ITEMS.registerItem("chainsaw", ChainsawItem::new, new Item.Properties().durability(32));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
