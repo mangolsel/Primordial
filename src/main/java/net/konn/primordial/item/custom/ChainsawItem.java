@@ -1,13 +1,19 @@
 package net.konn.primordial.item.custom;
 
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+
+import java.util.List;
 
 public class ChainsawItem extends Item {
     public ChainsawItem(Properties properties) {
@@ -30,5 +36,17 @@ public class ChainsawItem extends Item {
         }
 
         return InteractionResult.CONSUME;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        if(Screen.hasShiftDown()){
+            tooltipComponents.add(Component.translatable("tooltip.primordial.chainsaw.tooltip.1"));
+            tooltipComponents.add(Component.translatable("tooltip.primordial.chainsaw.tooltip.2"));
+        }else{
+            tooltipComponents.add(Component.translatable("tooltip.primordial.chainsaw.tooltip.shift"));
+        }
+
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }

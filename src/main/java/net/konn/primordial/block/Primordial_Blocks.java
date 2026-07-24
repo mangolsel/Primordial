@@ -8,6 +8,8 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DropExperienceBlock;
+import net.minecraft.world.level.block.MudBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -24,7 +26,14 @@ public class Primordial_Blocks {
                     .strength(4f).requiresCorrectToolForDrops()));
     public static final DeferredBlock<Block> TIN_BLOCK = registerBlock("tin_block",
             ()-> new Block(BlockBehaviour.Properties.of()
-                    .strength(4f).requiresCorrectToolForDrops()));
+                    .strength(4f)
+                    .sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops()));
+    public static final DeferredBlock<Block> PEAT_BLOCK = registerBlock("peat_block",
+            ()-> new MudBlock(BlockBehaviour.Properties.of()
+                    .strength(0.8f)
+                    .speedFactor(0.5f)
+                    .sound(SoundType.MUD)));
     public static final DeferredBlock<Block> RAW_CASSITERITE_BLOCK = registerBlock("raw_cassiterite_block",
             ()-> new Block(BlockBehaviour.Properties.of()
                     .strength(4f).requiresCorrectToolForDrops()));

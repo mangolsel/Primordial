@@ -2,6 +2,7 @@ package net.konn.primordial.item;
 
 import net.konn.primordial.PrimordialMod;
 import net.konn.primordial.item.custom.ChainsawItem;
+import net.konn.primordial.item.custom.FuelItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -10,6 +11,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class Primordial_Items {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(PrimordialMod.MOD_ID);
 
+    public static final DeferredItem<Item> PEAT = ITEMS.registerSimpleItem("peat");
+    public static final DeferredItem<Item> DRY_PEAT_BRICK =
+            ITEMS.registerItem("dry_peat_brick",properties -> new FuelItem(properties,800), new Item.Properties());
     public static final DeferredItem<Item> TIN_INGOT = ITEMS.registerSimpleItem("tin_ingot");
     public static final DeferredItem<Item> RAW_CASSITERITE = ITEMS.registerSimpleItem("raw_cassiterite");
     public static final DeferredItem<Item> CHAINSAW =
