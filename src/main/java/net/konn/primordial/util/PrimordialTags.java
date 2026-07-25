@@ -10,6 +10,8 @@ import net.minecraft.world.level.block.Block;
 
 public class PrimordialTags {
     public static class Blocks{
+        public static final TagKey<Block> INCORRECT_FOR_PRIMAL_TOOL = createTag("incorrect_for_primal_tool");
+        public static final TagKey<Block> NEEDS_PRIMAL_TOOL = createTag("needs_primal_tool");
 
         private static TagKey<Block> createTag (String name){
             return BlockTags.create(ResourceLocation.fromNamespaceAndPath(PrimordialMod.MOD_ID,name));

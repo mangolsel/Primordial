@@ -62,21 +62,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 )
         );
 
-//        slab(recipeOutput, RecipeCategory.BUILDING_BLOCKS, Primordial_Blocks.EBONY_SLAB.get(), Primordial_Blocks.EBONY_PLANKS.get());
-//        stairBuilder(Primordial_Blocks.EBONY_STAIRS.get(),Ingredient.of(Primordial_Blocks.EBONY_PLANKS.get())).group("ebony")
-//                .unlockedBy("has_ebony_planks", has(Primordial_Blocks.EBONY_PLANKS.get())).save(recipeOutput);
-//        pressurePlate(recipeOutput, Primordial_Blocks.EBONY_PRESSURE_PLATE.get(),Primordial_Blocks.EBONY_PLANKS.get());
-//        buttonBuilder(Primordial_Blocks.EBONY_BUTTON.get(),Ingredient.of(Primordial_Blocks.EBONY_PLANKS.get())).group("ebony")
-//                .unlockedBy("has_ebony_planks", has(Primordial_Blocks.EBONY_PLANKS.get())).save(recipeOutput);
-//        fenceBuilder(Primordial_Blocks.EBONY_FENCE.get(),Ingredient.of(Primordial_Blocks.EBONY_PLANKS.get())).group("ebony")
-//                .unlockedBy("has_ebony_planks", has(Primordial_Blocks.EBONY_PLANKS.get())).save(recipeOutput);
-//        fenceGateBuilder(Primordial_Blocks.EBONY_FENCE_GATE.get(),Ingredient.of(Primordial_Blocks.EBONY_PLANKS.get())).group("ebony")
-//                .unlockedBy("has_ebony_planks", has(Primordial_Blocks.EBONY_PLANKS.get())).save(recipeOutput);
-//        doorBuilder(Primordial_Blocks.EBONY_DOOR.get(),Ingredient.of(Primordial_Blocks.EBONY_PLANKS.get())).group("ebony")
-//                .unlockedBy("has_ebony_planks", has(Primordial_Blocks.EBONY_PLANKS.get())).save(recipeOutput);
-//        trapdoorBuilder(Primordial_Blocks.EBONY_TRAPDOOR.get(),Ingredient.of(Primordial_Blocks.EBONY_PLANKS.get())).group("ebony")
-//                .unlockedBy("has_ebony_planks", has(Primordial_Blocks.EBONY_PLANKS.get())).save(recipeOutput);
-
     }
 
     private record WoodRecipeSet(

@@ -28,6 +28,10 @@ public class Primordial_CreativeModeTabs {
                         output.accept(Primordial_Items.CORN);
                         output.accept(Primordial_Items.PEAT);
                         output.accept(Primordial_Items.DRY_PEAT_BRICK);
+                        output.accept(Primordial_Items.SHARPENED_ROCK);
+
+                        output.accept(Primordial_Items.PRIMAL_AXE);
+                        output.accept(Primordial_Items.PRIMAL_SWORD);
                     })
                     .build());
 
