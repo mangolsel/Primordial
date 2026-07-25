@@ -36,40 +36,39 @@ public class Primordial_Blocks {
     public static final DeferredBlock<Block> EBONY_PLANKS = registerBlock("ebony_planks",
             ()-> new Block(BlockBehaviour.Properties.of()
                     .strength(woodStrength)
-                    .requiresCorrectToolForDrops()
                     .sound(SoundType.WOOD)));
     public static final DeferredBlock<Block> EBONY_STAIRS = registerBlock("ebony_stairs",
             ()-> new StairBlock(Primordial_Blocks.EBONY_PLANKS.get().defaultBlockState(),
                     BlockBehaviour.Properties.of()
-                    .strength(woodStrength).requiresCorrectToolForDrops()
+                    .strength(woodStrength)
                     .sound(SoundType.WOOD)));
     public static final DeferredBlock<Block> EBONY_SLAB = registerBlock("ebony_slab",
             ()-> new SlabBlock(BlockBehaviour.Properties.of()
-                            .strength(woodStrength).requiresCorrectToolForDrops()
+                            .strength(woodStrength)
                             .sound(SoundType.WOOD)));
     public static final DeferredBlock<Block> EBONY_PRESSURE_PLATE = registerBlock("ebony_pressure_plate",
             ()-> new PressurePlateBlock(BlockSetType.OAK, BlockBehaviour.Properties.of()
-                    .strength(woodStrength).requiresCorrectToolForDrops()
+                    .strength(woodStrength)
                     .sound(SoundType.WOOD)));
     public static final DeferredBlock<Block> EBONY_FENCE = registerBlock("ebony_fence",
             ()-> new FenceBlock(BlockBehaviour.Properties.of()
-                    .strength(woodStrength).requiresCorrectToolForDrops()
+                    .strength(woodStrength)
                     .sound(SoundType.WOOD)));
     public static final DeferredBlock<Block> EBONY_FENCE_GATE = registerBlock("ebony_fence_gate",
             ()-> new FenceGateBlock(WoodType.OAK,BlockBehaviour.Properties.of()
-                    .strength(woodStrength).requiresCorrectToolForDrops()
+                    .strength(woodStrength)
                     .sound(SoundType.WOOD)));
     public static final DeferredBlock<Block> EBONY_DOOR = registerBlock("ebony_door",
             ()-> new DoorBlock(BlockSetType.OAK,BlockBehaviour.Properties.of()
-                    .strength(woodStrength).requiresCorrectToolForDrops().noOcclusion()
+                    .strength(woodStrength).noOcclusion()
                     .sound(SoundType.WOOD)));
     public static final DeferredBlock<Block> EBONY_TRAPDOOR = registerBlock("ebony_trapdoor",
             ()-> new TrapDoorBlock(BlockSetType.OAK,BlockBehaviour.Properties.of()
-                    .strength(woodStrength).requiresCorrectToolForDrops().noOcclusion()
+                    .strength(woodStrength).noOcclusion()
                     .sound(SoundType.WOOD)));
     public static final DeferredBlock<Block> EBONY_BUTTON = registerBlock("ebony_button",
             ()-> new ButtonBlock(BlockSetType.OAK,10, BlockBehaviour.Properties.of()
-                    .strength(woodStrength).requiresCorrectToolForDrops()
+                    .strength(woodStrength)
                     .noCollission()
                     .sound(SoundType.WOOD)));
 

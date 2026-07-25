@@ -1,6 +1,7 @@
 {
   "itemsGroup.primordial.primordial_items_tab": "Primordial Items",
   "itemsGroup.primordial.primordial_blocks_tab": "Primordial Blocks",
+  "itemsGroup.primordial.primordial_instruments_tab": "Primordial Instruments",
 
   "item.primordial.tin_ingot": "Tin Ingot",
   "item.primordial.raw_cassiterite": "Raw Cassiterite",
@@ -12,6 +13,9 @@
 
   "item.primordial.primal_sword": "Primal Sword",
   "item.primordial.primal_axe": "Primal Axe",
+  "item.primordial.primal_pickaxe": "Primal Pickaxe",
+  "item.primordial.primal_shovel": "Primal Shovel",
+  "item.primordial.primal_hoe": "Primal Hoe",
 
   "block.primordial.magic_block": "Magic Block",
 

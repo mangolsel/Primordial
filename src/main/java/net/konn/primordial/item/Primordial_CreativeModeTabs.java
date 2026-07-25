@@ -29,9 +29,20 @@ public class Primordial_CreativeModeTabs {
                         output.accept(Primordial_Items.PEAT);
                         output.accept(Primordial_Items.DRY_PEAT_BRICK);
                         output.accept(Primordial_Items.SHARPENED_ROCK);
+                    })
+                    .build());
 
-                        output.accept(Primordial_Items.PRIMAL_AXE);
+    public static final Supplier<CreativeModeTab> PRIMORDIAL_INSTRUMENTS_TAB =
+            CREATIVE_MODE_TABS.register("primordial_instruments_tab",() -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemsGroup.primordial.primordial_instruments_tab"))
+                    .icon(()->new ItemStack(Primordial_Items.PRIMAL_SWORD.get()))
+                    .withTabsBefore(ResourceLocation.fromNamespaceAndPath(PrimordialMod.MOD_ID,"primordial_items_tab"))
+                    .displayItems((itemDisplayParameters, output) -> {
                         output.accept(Primordial_Items.PRIMAL_SWORD);
+                        output.accept(Primordial_Items.PRIMAL_SHOVEL);
+                        output.accept(Primordial_Items.PRIMAL_PICKAXE);
+                        output.accept(Primordial_Items.PRIMAL_AXE);
+                        output.accept(Primordial_Items.PRIMAL_HOE);
                     })
                     .build());
 

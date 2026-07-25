@@ -3,9 +3,7 @@ package net.konn.primordial.item;
 import net.konn.primordial.PrimordialMod;
 import net.konn.primordial.item.custom.ChainsawItem;
 import net.konn.primordial.item.custom.FuelItem;
-import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -32,6 +30,18 @@ public class Primordial_Items {
             ()-> new AxeItem(Primordial_Tool_Tiers.PRIMAL,
                     new Item.Properties()
                             .attributes(AxeItem.createAttributes(Primordial_Tool_Tiers.PRIMAL, 4,-3.2f))));
+    public static final DeferredItem <Item> PRIMAL_PICKAXE = ITEMS.register("primal_pickaxe",
+            ()-> new PickaxeItem(Primordial_Tool_Tiers.PRIMAL,
+                    new Item.Properties()
+                            .attributes(PickaxeItem.createAttributes(Primordial_Tool_Tiers.PRIMAL, 0,-3.2f))));
+    public static final DeferredItem <Item> PRIMAL_SHOVEL = ITEMS.register("primal_shovel",
+            ()-> new ShovelItem(Primordial_Tool_Tiers.PRIMAL,
+                    new Item.Properties()
+                            .attributes(ShovelItem.createAttributes(Primordial_Tool_Tiers.PRIMAL, 0,-3.2f))));
+    public static final DeferredItem <Item> PRIMAL_HOE = ITEMS.register("primal_hoe",
+            ()-> new HoeItem(Primordial_Tool_Tiers.PRIMAL,
+                    new Item.Properties()
+                            .attributes(HoeItem.createAttributes(Primordial_Tool_Tiers.PRIMAL, 0,-3.2f))));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

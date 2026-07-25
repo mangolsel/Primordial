@@ -24,8 +24,12 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(Primordial_Items.DRY_PEAT_BRICK.get());
         basicItem(Primordial_Items.TIN_INGOT.get());
         basicItem(Primordial_Items.SHARPENED_ROCK.get());
+        //PRIMAL TOOLS
         basicItem(Primordial_Items.PRIMAL_SWORD.get());
         basicItem(Primordial_Items.PRIMAL_AXE.get());
+        basicItem(Primordial_Items.PRIMAL_PICKAXE.get());
+        basicItem(Primordial_Items.PRIMAL_SHOVEL.get());
+        basicItem(Primordial_Items.PRIMAL_HOE.get());
         //EBONY WOOD
         basicItem(Primordial_Blocks.EBONY_TRAPDOOR.asItem());
         buttonItem(Primordial_Blocks.EBONY_BUTTON, Primordial_Blocks.EBONY_PLANKS);

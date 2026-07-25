@@ -1,6 +1,7 @@
 package net.konn.primordial;
 
 import net.konn.primordial.block.Primordial_Blocks;
+import net.konn.primordial.event.BareHandMiningHandler;
 import net.konn.primordial.item.Primordial_CreativeModeTabs;
 import net.konn.primordial.item.Primordial_Items;
 import net.minecraft.world.item.CreativeModeTab;
@@ -33,8 +34,8 @@ public class PrimordialMod {
         Primordial_Items.register(modEventBus);
         Primordial_Blocks.register(modEventBus);
 
-
         NeoForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(new BareHandMiningHandler());
 
 
         modEventBus.addListener(this::addCreative);

@@ -2,9 +2,11 @@ package net.konn.primordial.datagen;
 
 import net.konn.primordial.PrimordialMod;
 import net.konn.primordial.block.Primordial_Blocks;
+import net.konn.primordial.util.PrimordialTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +20,20 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
+        tag(PrimordialTags.Blocks.INJURES_BARE_HANDS_WOOD)
+                .addTag(BlockTags.MINEABLE_WITH_AXE)
+                .remove(
+                        Blocks.PUMPKIN,
+                        Blocks.CARVED_PUMPKIN,
+                        Blocks.JACK_O_LANTERN,
+                        Blocks.MELON
+                );
+        tag(PrimordialTags.Blocks.INJURES_BARE_HANDS_STONE)
+                .addTag(BlockTags.MINEABLE_WITH_PICKAXE);
+
+        tag(PrimordialTags.Blocks.INCORRECT_FOR_PRIMAL_TOOL)
+                .addTag(BlockTags.INCORRECT_FOR_WOODEN_TOOL);
+
         this.tag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(Primordial_Blocks.GNEIS_CASSITERITE_ORE.get())
                 .add(Primordial_Blocks.RAW_CASSITERITE_BLOCK.get())
