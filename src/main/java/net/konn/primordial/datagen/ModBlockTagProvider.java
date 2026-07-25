@@ -27,8 +27,24 @@ public class ModBlockTagProvider extends BlockTagsProvider {
         this.tag(BlockTags.MINEABLE_WITH_SHOVEL)
                 .add(Primordial_Blocks.PEAT_BLOCK.get());
 
+        this.tag(BlockTags.MINEABLE_WITH_AXE)
+                .add(Primordial_Blocks.EBONY_PLANKS.get())
+                .add(Primordial_Blocks.EBONY_SLAB.get())
+                .add(Primordial_Blocks.EBONY_STAIRS.get())
+                .add(Primordial_Blocks.EBONY_BUTTON.get())
+                .add(Primordial_Blocks.EBONY_FENCE_GATE.get())
+                .add(Primordial_Blocks.EBONY_FENCE.get())
+                .add(Primordial_Blocks.EBONY_TRAPDOOR.get())
+                .add(Primordial_Blocks.EBONY_DOOR.get())
+                .add(Primordial_Blocks.EBONY_PRESSURE_PLATE.get());
+
         this.tag(BlockTags.NEEDS_STONE_TOOL)
                 .add(Primordial_Blocks.GNEIS_CASSITERITE_ORE.get());
+
+        tag(BlockTags.WOODEN_FENCES)
+                .add(Primordial_Blocks.EBONY_FENCE.get());
+        tag(BlockTags.FENCE_GATES)
+                .add(Primordial_Blocks.EBONY_FENCE_GATE.get());
 
     }
 }

@@ -20,7 +20,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
     @Override
     protected void buildRecipes(RecipeOutput recipeOutput) {
-        List<ItemLike> CASSITERITE_SMELTABLES = List.of(Primordial_Items.RAW_CASSITERITE,
+        List<ItemLike> cassiteriteSmeltables = List.of(Primordial_Items.RAW_CASSITERITE,
                 Primordial_Blocks.GNEIS_CASSITERITE_ORE);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Primordial_Blocks.TIN_BLOCK.get())
@@ -39,12 +39,109 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .requires(Primordial_Blocks.TIN_BLOCK.get())
                 .unlockedBy("has_tin_block",has(Primordial_Blocks.TIN_BLOCK.get())).save(recipeOutput);
 
-        oreSmelting(recipeOutput, CASSITERITE_SMELTABLES, RecipeCategory.MISC,
+        oreSmelting(recipeOutput, cassiteriteSmeltables, RecipeCategory.MISC,
                 Primordial_Items.TIN_INGOT.get(), 0.25f, 200, "tin");
 
-        oreBlasting(recipeOutput, CASSITERITE_SMELTABLES, RecipeCategory.MISC,
+        oreBlasting(recipeOutput, cassiteriteSmeltables, RecipeCategory.MISC,
                 Primordial_Items.TIN_INGOT.get(), 0.25f, 100, "tin");
 
+        //EBONY WOOD
+        woodFamilyRecipes(
+                recipeOutput,
+                new WoodRecipeSet(
+                        "ebony",
+                        Primordial_Blocks.EBONY_PLANKS.get(),
+                        Primordial_Blocks.EBONY_SLAB.get(),
+                        Primordial_Blocks.EBONY_STAIRS.get(),
+                        Primordial_Blocks.EBONY_PRESSURE_PLATE.get(),
+                        Primordial_Blocks.EBONY_BUTTON.get(),
+                        Primordial_Blocks.EBONY_FENCE.get(),
+                        Primordial_Blocks.EBONY_FENCE_GATE.get(),
+                        Primordial_Blocks.EBONY_DOOR.get(),
+                        Primordial_Blocks.EBONY_TRAPDOOR.get()
+                )
+        );
+
+//        slab(recipeOutput, RecipeCategory.BUILDING_BLOCKS, Primordial_Blocks.EBONY_SLAB.get(), Primordial_Blocks.EBONY_PLANKS.get());
+//        stairBuilder(Primordial_Blocks.EBONY_STAIRS.get(),Ingredient.of(Primordial_Blocks.EBONY_PLANKS.get())).group("ebony")
+//                .unlockedBy("has_ebony_planks", has(Primordial_Blocks.EBONY_PLANKS.get())).save(recipeOutput);
+//        pressurePlate(recipeOutput, Primordial_Blocks.EBONY_PRESSURE_PLATE.get(),Primordial_Blocks.EBONY_PLANKS.get());
+//        buttonBuilder(Primordial_Blocks.EBONY_BUTTON.get(),Ingredient.of(Primordial_Blocks.EBONY_PLANKS.get())).group("ebony")
+//                .unlockedBy("has_ebony_planks", has(Primordial_Blocks.EBONY_PLANKS.get())).save(recipeOutput);
+//        fenceBuilder(Primordial_Blocks.EBONY_FENCE.get(),Ingredient.of(Primordial_Blocks.EBONY_PLANKS.get())).group("ebony")
+//                .unlockedBy("has_ebony_planks", has(Primordial_Blocks.EBONY_PLANKS.get())).save(recipeOutput);
+//        fenceGateBuilder(Primordial_Blocks.EBONY_FENCE_GATE.get(),Ingredient.of(Primordial_Blocks.EBONY_PLANKS.get())).group("ebony")
+//                .unlockedBy("has_ebony_planks", has(Primordial_Blocks.EBONY_PLANKS.get())).save(recipeOutput);
+//        doorBuilder(Primordial_Blocks.EBONY_DOOR.get(),Ingredient.of(Primordial_Blocks.EBONY_PLANKS.get())).group("ebony")
+//                .unlockedBy("has_ebony_planks", has(Primordial_Blocks.EBONY_PLANKS.get())).save(recipeOutput);
+//        trapdoorBuilder(Primordial_Blocks.EBONY_TRAPDOOR.get(),Ingredient.of(Primordial_Blocks.EBONY_PLANKS.get())).group("ebony")
+//                .unlockedBy("has_ebony_planks", has(Primordial_Blocks.EBONY_PLANKS.get())).save(recipeOutput);
+
+    }
+
+    private record WoodRecipeSet(
+            String name,
+            ItemLike planks,
+            ItemLike slab,
+            ItemLike stairs,
+            ItemLike pressurePlate,
+            ItemLike button,
+            ItemLike fence,
+            ItemLike fenceGate,
+            ItemLike door,
+            ItemLike trapdoor){}
+
+    private static void woodFamilyRecipes(
+            RecipeOutput recipeOutput,
+            WoodRecipeSet wood
+    ) {
+        Ingredient planksIngredient = Ingredient.of(wood.planks());
+
+        String group = wood.name();
+        String unlockCriterion = getHasName(wood.planks());
+
+        slab(
+                recipeOutput,
+                RecipeCategory.BUILDING_BLOCKS,
+                wood.slab(),
+                wood.planks()
+        );
+
+        stairBuilder(wood.stairs(), planksIngredient)
+                .group(group)
+                .unlockedBy(unlockCriterion, has(wood.planks()))
+                .save(recipeOutput);
+
+        pressurePlate(
+                recipeOutput,
+                wood.pressurePlate(),
+                wood.planks()
+        );
+
+        buttonBuilder(wood.button(), planksIngredient)
+                .group(group)
+                .unlockedBy(unlockCriterion, has(wood.planks()))
+                .save(recipeOutput);
+
+        fenceBuilder(wood.fence(), planksIngredient)
+                .group(group)
+                .unlockedBy(unlockCriterion, has(wood.planks()))
+                .save(recipeOutput);
+
+        fenceGateBuilder(wood.fenceGate(), planksIngredient)
+                .group(group)
+                .unlockedBy(unlockCriterion, has(wood.planks()))
+                .save(recipeOutput);
+
+        doorBuilder(wood.door(), planksIngredient)
+                .group(group)
+                .unlockedBy(unlockCriterion, has(wood.planks()))
+                .save(recipeOutput);
+
+        trapdoorBuilder(wood.trapdoor(), planksIngredient)
+                .group(group)
+                .unlockedBy(unlockCriterion, has(wood.planks()))
+                .save(recipeOutput);
     }
 
 

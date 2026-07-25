@@ -10,6 +10,17 @@
   "item.primordial.dry_peat_brick": "Dry Peat Brick",
 
   "block.primordial.magic_block": "Magic Block",
+
+  "block.primordial.ebony_planks": "Ebony Planks",
+  "block.primordial.ebony_stairs": "Ebony Stairs",
+  "block.primordial.ebony_slab": "Ebony Slab",
+  "block.primordial.ebony_pressure_plate": "Ebony Pressure Plate",
+  "block.primordial.ebony_button": "Ebony Button",
+  "block.primordial.ebony_fence": "Ebony Fence",
+  "block.primordial.ebony_fence_gate": "Ebony Fence Gate",
+  "block.primordial.ebony_door": "Ebony Door",
+  "block.primordial.ebony_trapdoor": "Ebony Trapdoor",
+
   "block.primordial.peat_block": "Peat Block",
   "block.primordial.tin_block": "Tin Block",
   "block.primordial.raw_cassiterite_block": "Raw Cassiterite Block",

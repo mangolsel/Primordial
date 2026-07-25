@@ -6,18 +6,20 @@ import net.konn.primordial.item.Primordial_Items;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.DropExperienceBlock;
-import net.minecraft.world.level.block.MudBlock;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
+
 public class Primordial_Blocks {
+    static float woodStrength = 2f;
+
     public static final DeferredRegister.Blocks BLOCKS =
             DeferredRegister.createBlocks(PrimordialMod.MOD_ID);
 
@@ -29,6 +31,51 @@ public class Primordial_Blocks {
                     .strength(4f)
                     .sound(SoundType.METAL)
                     .requiresCorrectToolForDrops()));
+
+    //EBONY WOOD
+    public static final DeferredBlock<Block> EBONY_PLANKS = registerBlock("ebony_planks",
+            ()-> new Block(BlockBehaviour.Properties.of()
+                    .strength(woodStrength)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.WOOD)));
+    public static final DeferredBlock<Block> EBONY_STAIRS = registerBlock("ebony_stairs",
+            ()-> new StairBlock(Primordial_Blocks.EBONY_PLANKS.get().defaultBlockState(),
+                    BlockBehaviour.Properties.of()
+                    .strength(woodStrength).requiresCorrectToolForDrops()
+                    .sound(SoundType.WOOD)));
+    public static final DeferredBlock<Block> EBONY_SLAB = registerBlock("ebony_slab",
+            ()-> new SlabBlock(BlockBehaviour.Properties.of()
+                            .strength(woodStrength).requiresCorrectToolForDrops()
+                            .sound(SoundType.WOOD)));
+    public static final DeferredBlock<Block> EBONY_PRESSURE_PLATE = registerBlock("ebony_pressure_plate",
+            ()-> new PressurePlateBlock(BlockSetType.OAK, BlockBehaviour.Properties.of()
+                    .strength(woodStrength).requiresCorrectToolForDrops()
+                    .sound(SoundType.WOOD)));
+    public static final DeferredBlock<Block> EBONY_FENCE = registerBlock("ebony_fence",
+            ()-> new FenceBlock(BlockBehaviour.Properties.of()
+                    .strength(woodStrength).requiresCorrectToolForDrops()
+                    .sound(SoundType.WOOD)));
+    public static final DeferredBlock<Block> EBONY_FENCE_GATE = registerBlock("ebony_fence_gate",
+            ()-> new FenceGateBlock(WoodType.OAK,BlockBehaviour.Properties.of()
+                    .strength(woodStrength).requiresCorrectToolForDrops()
+                    .sound(SoundType.WOOD)));
+    public static final DeferredBlock<Block> EBONY_DOOR = registerBlock("ebony_door",
+            ()-> new DoorBlock(BlockSetType.OAK,BlockBehaviour.Properties.of()
+                    .strength(woodStrength).requiresCorrectToolForDrops().noOcclusion()
+                    .sound(SoundType.WOOD)));
+    public static final DeferredBlock<Block> EBONY_TRAPDOOR = registerBlock("ebony_trapdoor",
+            ()-> new TrapDoorBlock(BlockSetType.OAK,BlockBehaviour.Properties.of()
+                    .strength(woodStrength).requiresCorrectToolForDrops().noOcclusion()
+                    .sound(SoundType.WOOD)));
+    public static final DeferredBlock<Block> EBONY_BUTTON = registerBlock("ebony_button",
+            ()-> new ButtonBlock(BlockSetType.OAK,10, BlockBehaviour.Properties.of()
+                    .strength(woodStrength).requiresCorrectToolForDrops()
+                    .noCollission()
+                    .sound(SoundType.WOOD)));
+
+
+
+
     public static final DeferredBlock<Block> PEAT_BLOCK = registerBlock("peat_block",
             ()-> new MudBlock(BlockBehaviour.Properties.of()
                     .strength(0.8f)

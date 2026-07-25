@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "group": "ebony",
+  "key": {
+    "#": {
+      "item": "primordial:ebony_planks"
+    }
+  },
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "result": {
+    "count": 2,
+    "id": "primordial:ebony_trapdoor"
+  }
+}

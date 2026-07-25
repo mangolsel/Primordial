@@ -37,6 +37,17 @@ public class Primordial_CreativeModeTabs {
                     .icon(()->new ItemStack(Primordial_Blocks.TIN_BLOCK.get()))
                     .displayItems((itemDisplayParameters, output) -> {
                         output.accept(Primordial_Blocks.MAGIC_BLOCK);
+                        //EBONY WOOD
+                        output.accept(Primordial_Blocks.EBONY_PLANKS);
+                        output.accept(Primordial_Blocks.EBONY_STAIRS);
+                        output.accept(Primordial_Blocks.EBONY_SLAB);
+                        output.accept(Primordial_Blocks.EBONY_FENCE);
+                        output.accept(Primordial_Blocks.EBONY_FENCE_GATE);
+                        output.accept(Primordial_Blocks.EBONY_DOOR);
+                        output.accept(Primordial_Blocks.EBONY_TRAPDOOR);
+                        output.accept(Primordial_Blocks.EBONY_PRESSURE_PLATE);
+                        output.accept(Primordial_Blocks.EBONY_BUTTON);
+
                         output.accept(Primordial_Blocks.PEAT_BLOCK);
                         output.accept(Primordial_Blocks.TIN_BLOCK);
                         output.accept(Primordial_Blocks.RAW_CASSITERITE_BLOCK);

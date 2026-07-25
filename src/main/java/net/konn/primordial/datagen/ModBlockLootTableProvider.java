@@ -30,6 +30,19 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
     @Override
     protected void generate() {
         dropSelf(Primordial_Blocks.MAGIC_BLOCK.get());
+        //EBONY WOOD
+        dropSelf(Primordial_Blocks.EBONY_PLANKS.get());
+        dropSelf(Primordial_Blocks.EBONY_STAIRS.get());
+        dropSelf(Primordial_Blocks.EBONY_PRESSURE_PLATE.get());
+        dropSelf(Primordial_Blocks.EBONY_BUTTON.get());
+        dropSelf(Primordial_Blocks.EBONY_FENCE.get());
+        dropSelf(Primordial_Blocks.EBONY_FENCE_GATE.get());
+        dropSelf(Primordial_Blocks.EBONY_TRAPDOOR.get());
+        this.add(Primordial_Blocks.EBONY_DOOR.get(),
+                block -> createDoorTable(Primordial_Blocks.EBONY_DOOR.get()));
+        this.add(Primordial_Blocks.EBONY_SLAB.get(),
+                block -> createSlabItemTable(Primordial_Blocks.EBONY_SLAB.get()));
+
         dropSelf(Primordial_Blocks.TIN_BLOCK.get());
         dropSelf(Primordial_Blocks.RAW_CASSITERITE_BLOCK.get());
 
@@ -47,7 +60,7 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
     protected LootTable.Builder createMultipleDrops(Block block, Item item, float minDrops, float maxDrops) {
         HolderLookup.RegistryLookup<Enchantment> registrylookup = this.registries.lookupOrThrow(Registries.ENCHANTMENT);
         return this.createSilkTouchDispatchTable(block,
-                (LootPoolEntryContainer.Builder)this.applyExplosionDecay(block,
+                this.applyExplosionDecay(block,
                         LootItem.lootTableItem(item)
                                 .apply(SetItemCountFunction.setCount(UniformGenerator.between(minDrops, maxDrops)))
                                 .apply(ApplyBonusCount.
