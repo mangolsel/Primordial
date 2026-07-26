@@ -82,12 +82,6 @@ public class PrimordialModClient {
             return;
         }
 
-        /*
-         * Плавно приближаем отображаемое значение
-         * к значению, полученному от сервера.
-         */
-        ClientTemperatureState.updateDisplayedHeat();
-
         float heatPercent = Mth.clamp(
                 ClientTemperatureState.getHeatPercent(),
                 0.0F,

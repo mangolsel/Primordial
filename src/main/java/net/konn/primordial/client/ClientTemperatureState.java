@@ -12,18 +12,21 @@ public final class ClientTemperatureState {
     private ClientTemperatureState() {
     }
 
+
     public static void setHeatExposure(int value) {
         targetHeatExposure = Math.clamp(value, 0, MAX_HEAT);
     }
-
-    public static void updateDisplayedHeat() {
+    public static void tick() {
         displayedHeatExposure +=
-                (targetHeatExposure - displayedHeatExposure) * SMOOTHING;
+                (targetHeatExposure - displayedHeatExposure) * 0.08F;
 
-        if (Math.abs(targetHeatExposure - displayedHeatExposure) < 0.01F) {
+        if (Math.abs(
+                targetHeatExposure - displayedHeatExposure
+        ) < 0.01F) {
             displayedHeatExposure = targetHeatExposure;
         }
     }
+
 
     public static float getHeatPercent() {
         return displayedHeatExposure / MAX_HEAT;

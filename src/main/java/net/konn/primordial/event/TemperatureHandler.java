@@ -25,6 +25,8 @@ import java.util.Queue;
 import java.util.Set;
 
 public final class TemperatureHandler {
+    private static final int COLD_DAMAGE_INTERVAL_TICKS = 40;
+    private static final float COLD_DAMAGE = 1.0F;
     private static final int UPDATE_INTERVAL_TICKS = 10;
     private static final int MAX_HEAT = 140;
     private static final int MAX_COLD = 140;
@@ -49,6 +51,39 @@ public final class TemperatureHandler {
         }
 
         maintainCustomFreezing(player);
+        applyColdDamage(player);
+    }
+    private void applyColdDamage(ServerPlayer player) {
+        if (!player.isAlive()
+                || player.isCreative()
+                || player.isSpectator()) {
+            return;
+        }
+
+        if (player.tickCount % COLD_DAMAGE_INTERVAL_TICKS != 0) {
+            return;
+        }
+
+        int coldExposure = player.getData(
+                PrimordialAttachments.COLD_EXPOSURE
+        );
+
+        if (coldExposure < MAX_COLD) {
+            return;
+        }
+
+        if (!player.canFreeze()) {
+            return;
+        }
+
+        if (player.getInBlockState().is(Blocks.POWDER_SNOW)) {
+            return;
+        }
+
+        player.hurt(
+                player.damageSources().freeze(),
+                COLD_DAMAGE
+        );
     }
 
     private void updateTemperature(ServerPlayer player) {
@@ -294,7 +329,7 @@ public final class TemperatureHandler {
                 return false;
             }
 
-            if (!level.hasChunkAt(current)) {
+            if (!level.isAreaLoaded(current, 1)) {
                 return false;
             }
 
@@ -319,10 +354,6 @@ public final class TemperatureHandler {
 
                 if (visited.contains(next)) {
                     continue;
-                }
-
-                if (!level.hasChunkAt(next)) {
-                    return false;
                 }
 
                 if (isAirPassage(level, next)) {

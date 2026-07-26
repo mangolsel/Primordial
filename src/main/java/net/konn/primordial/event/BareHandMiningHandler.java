@@ -114,7 +114,7 @@ public final class BareHandMiningHandler {
             return false;
         }
 
-        if (!player.level().hasChunkAt(mining.blockPos)) {
+        if (!player.level().isAreaLoaded(mining.blockPos, 0)) {
             return false;
         }
 
