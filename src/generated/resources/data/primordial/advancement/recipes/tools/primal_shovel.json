@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_sharpened_rock": {
+      "conditions": {
+        "items": [
+          {
+            "items": "primordial:sharpened_rock"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "primordial:primal_shovel"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_sharpened_rock"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "primordial:primal_shovel"
+    ]
+  }
+}

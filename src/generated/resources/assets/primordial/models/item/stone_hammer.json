@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "primordial:item/primal_sword"
+    "layer0": "primordial:item/stone_hammer"
   }
 }

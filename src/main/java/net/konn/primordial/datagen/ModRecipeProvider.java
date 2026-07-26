@@ -6,6 +6,7 @@ import net.konn.primordial.item.Primordial_Items;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.conditions.IConditionBuilder;
@@ -29,6 +30,56 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("AAA")
                 .pattern("AAA")
                 .unlockedBy("has_tin",has(Primordial_Items.TIN_INGOT.get())).save(recipeOutput);
+        //PRIMAL TOOLS
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, Primordial_Items.PRIMAL_SWORD.get())
+                .define('A', Primordial_Items.SHARPENED_ROCK.get())
+                .define('B', Primordial_Items.PLANT_FIBER.get())
+                .define('C', Items.STICK)
+                .pattern(" A")
+                .pattern("CB")
+                .unlockedBy("has_sharpened_rock",has(Primordial_Items.SHARPENED_ROCK.get())).save(recipeOutput);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Primordial_Items.PRIMAL_PICKAXE.get())
+                .define('A', Primordial_Items.SHARPENED_ROCK.get())
+                .define('B', Primordial_Items.PLANT_FIBER.get())
+                .define('C', Items.STICK)
+                .pattern(" A ")
+                .pattern(" BA")
+                .pattern("C  ")
+                .unlockedBy("has_sharpened_rock",has(Primordial_Items.SHARPENED_ROCK.get())).save(recipeOutput);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Primordial_Items.PRIMAL_AXE.get())
+                .define('A', Primordial_Items.SHARPENED_ROCK.get())
+                .define('B', Primordial_Items.PLANT_FIBER.get())
+                .define('C', Items.STICK)
+                .pattern("AB")
+                .pattern("C ")
+                .unlockedBy("has_sharpened_rock",has(Primordial_Items.SHARPENED_ROCK.get())).save(recipeOutput);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Primordial_Items.PRIMAL_HOE.get())
+                .define('A', Primordial_Items.SHARPENED_ROCK.get())
+                .define('B', Primordial_Items.PLANT_FIBER.get())
+                .define('C', Items.STICK)
+                .pattern("A  ")
+                .pattern(" B ")
+                .pattern("C  ")
+                .unlockedBy("has_sharpened_rock",has(Primordial_Items.SHARPENED_ROCK.get())).save(recipeOutput);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Primordial_Items.PRIMAL_SHOVEL.get())
+                .define('A', Primordial_Items.SHARPENED_ROCK.get())
+                .define('B', Primordial_Items.PLANT_FIBER.get())
+                .define('C', Items.STICK)
+                .pattern("  A")
+                .pattern(" B ")
+                .pattern("C  ")
+                .unlockedBy("has_sharpened_rock",has(Primordial_Items.SHARPENED_ROCK.get())).save(recipeOutput);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Primordial_Items.STONE_HAMMER.get())
+                .define('A', Primordial_Items.SHARPENED_ROCK.get())
+                .define('B', Primordial_Items.PLANT_FIBER.get())
+                .define('C', Items.STICK)
+                .pattern(" AA")
+                .pattern(" BA")
+                .pattern("C  ")
+                .unlockedBy("has_sharpened_rock",has(Primordial_Items.SHARPENED_ROCK.get())).save(recipeOutput);
+
+
+
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Primordial_Blocks.PEAT_BLOCK.get())
                 .define('A', Primordial_Items.PEAT.get())
                 .pattern("AA")

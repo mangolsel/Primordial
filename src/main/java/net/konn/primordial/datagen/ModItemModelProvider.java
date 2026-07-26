@@ -5,10 +5,13 @@ import net.konn.primordial.block.Primordial_Blocks;
 import net.konn.primordial.item.Primordial_Items;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 
 public class ModItemModelProvider extends ItemModelProvider {
     public ModItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
@@ -24,12 +27,14 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(Primordial_Items.DRY_PEAT_BRICK.get());
         basicItem(Primordial_Items.TIN_INGOT.get());
         basicItem(Primordial_Items.SHARPENED_ROCK.get());
+        basicItem(Primordial_Items.PLANT_FIBER.get());
         //PRIMAL TOOLS
-        basicItem(Primordial_Items.PRIMAL_SWORD.get());
-        basicItem(Primordial_Items.PRIMAL_AXE.get());
-        basicItem(Primordial_Items.PRIMAL_PICKAXE.get());
-        basicItem(Primordial_Items.PRIMAL_SHOVEL.get());
-        basicItem(Primordial_Items.PRIMAL_HOE.get());
+        handheldItem(Primordial_Items.PRIMAL_SWORD.get());
+        handheldItem(Primordial_Items.PRIMAL_AXE.get());
+        handheldItem(Primordial_Items.PRIMAL_PICKAXE.get());
+        handheldItem(Primordial_Items.PRIMAL_SHOVEL.get());
+        handheldItem(Primordial_Items.PRIMAL_HOE.get());
+        handheldItem(Primordial_Items.STONE_HAMMER.get());
         //EBONY WOOD
         basicItem(Primordial_Blocks.EBONY_TRAPDOOR.asItem());
         buttonItem(Primordial_Blocks.EBONY_BUTTON, Primordial_Blocks.EBONY_PLANKS);
@@ -52,5 +57,10 @@ public class ModItemModelProvider extends ItemModelProvider {
         this.withExistingParent(block.getId().getPath(), mcLoc("block/wall_inventory"))
                 .texture("wall",  ResourceLocation.fromNamespaceAndPath(PrimordialMod.MOD_ID,
                         "block/" + baseBlock.getId().getPath()));
+    }
+    private ItemModelBuilder handheldItem(DeferredItem<Item> item) {
+        return withExistingParent(item.getId().getPath(),
+                ResourceLocation.parse("item/handheld")).texture("layer0",
+                ResourceLocation.fromNamespaceAndPath(PrimordialMod.MOD_ID,"item/" + item.getId().getPath()));
     }
 }

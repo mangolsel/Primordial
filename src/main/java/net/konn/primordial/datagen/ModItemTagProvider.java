@@ -22,8 +22,6 @@ public class ModItemTagProvider extends ItemTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         tag(PrimordialTags.Items.PRIMORDIAL_ITEMS)
-                .add(Primordial_Items.CHAINSAW.get())
-                .add(Primordial_Items.CORN.get())
                 .add(Primordial_Items.PRIMAL_AXE.get())
                 .add(Primordial_Items.PRIMAL_HOE.get())
                 .add(Primordial_Items.PRIMAL_SWORD.get())
@@ -33,7 +31,8 @@ public class ModItemTagProvider extends ItemTagsProvider {
         tag(ItemTags.AXES)
                 .add(Primordial_Items.PRIMAL_AXE.get());
         tag(ItemTags.PICKAXES)
-                .add(Primordial_Items.PRIMAL_PICKAXE.get());
+                .add(Primordial_Items.PRIMAL_PICKAXE.get())
+                .add(Primordial_Items.STONE_HAMMER.get());
         tag(ItemTags.SHOVELS)
                 .add(Primordial_Items.PRIMAL_SHOVEL.get());
         tag(ItemTags.SWORDS)
