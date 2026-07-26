@@ -62,5 +62,38 @@ public class ModBlockTagProvider extends BlockTagsProvider {
         tag(BlockTags.FENCE_GATES)
                 .add(Primordial_Blocks.EBONY_FENCE_GATE.get());
 
+        tag(PrimordialTags.Blocks.DOES_NOT_PROVIDE_SHADE)
+                .addTag(BlockTags.LEAVES)
+                .addTag(BlockTags.FENCES)
+                .addTag(BlockTags.WALLS)
+                .add(
+                        Blocks.IRON_BARS,
+
+                        Blocks.GLASS,
+                        Blocks.TINTED_GLASS,
+
+                        Blocks.WHITE_STAINED_GLASS,
+                        Blocks.ORANGE_STAINED_GLASS,
+                        Blocks.MAGENTA_STAINED_GLASS,
+                        Blocks.LIGHT_BLUE_STAINED_GLASS,
+                        Blocks.YELLOW_STAINED_GLASS,
+                        Blocks.LIME_STAINED_GLASS,
+                        Blocks.PINK_STAINED_GLASS,
+                        Blocks.GRAY_STAINED_GLASS,
+                        Blocks.LIGHT_GRAY_STAINED_GLASS,
+                        Blocks.CYAN_STAINED_GLASS,
+                        Blocks.PURPLE_STAINED_GLASS,
+                        Blocks.BLUE_STAINED_GLASS,
+                        Blocks.BROWN_STAINED_GLASS,
+                        Blocks.GREEN_STAINED_GLASS,
+                        Blocks.RED_STAINED_GLASS,
+                        Blocks.BLACK_STAINED_GLASS
+                );
+        tag(PrimordialTags.Blocks.DOES_NOT_SEAL_ROOM)
+                .addTag(BlockTags.LEAVES)
+                .addTag(BlockTags.FENCES)
+                .addTag(BlockTags.WALLS)
+                .add(Blocks.IRON_BARS);
+
     }
 }

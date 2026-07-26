@@ -1,9 +1,12 @@
 package net.konn.primordial;
 
+import net.konn.primordial.attachment.PrimordialAttachments;
 import net.konn.primordial.block.Primordial_Blocks;
 import net.konn.primordial.event.BareHandMiningHandler;
+import net.konn.primordial.event.TemperatureHandler;
 import net.konn.primordial.item.Primordial_CreativeModeTabs;
 import net.konn.primordial.item.Primordial_Items;
+import net.konn.primordial.network.PrimordialNetworking;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import org.slf4j.Logger;
@@ -29,13 +32,18 @@ public class PrimordialMod {
 
     public PrimordialMod(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(PrimordialNetworking::registerPayloads);
 
         Primordial_CreativeModeTabs.register(modEventBus);
         Primordial_Items.register(modEventBus);
         Primordial_Blocks.register(modEventBus);
+        PrimordialAttachments.register(modEventBus);
+
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(new BareHandMiningHandler());
+        NeoForge.EVENT_BUS.register(new TemperatureHandler());
+
 
 
         modEventBus.addListener(this::addCreative);

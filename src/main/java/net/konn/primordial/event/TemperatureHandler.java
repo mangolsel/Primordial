@@ -1,0 +1,367 @@
+package net.konn.primordial.event;
+
+import net.konn.primordial.attachment.PrimordialAttachments;
+import net.konn.primordial.network.TemperatureSyncPayload;
+import net.konn.primordial.util.PrimordialTags;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BiomeTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.ArrayDeque;
+import java.util.HashSet;
+import java.util.Queue;
+import java.util.Set;
+
+public final class TemperatureHandler {
+    private static final int UPDATE_INTERVAL_TICKS = 10;
+    private static final int MAX_HEAT = 140;
+    private static final int EXPOSURE_STEP = 1;
+    private static final int RECOVERY_STEP = 3;
+    private static final int HEAT_DAMAGE_INTERVAL_TICKS = 40;
+    private static final float HEAT_DAMAGE = 1.0F;
+
+    private static final int ROOM_HORIZONTAL_RADIUS = 10;
+    private static final int ROOM_DOWN_RADIUS = 4;
+    private static final int ROOM_UP_RADIUS = 6;
+    private static final int MAX_VISITED_ROOM_BLOCKS = 4096;
+
+    @SubscribeEvent
+    public void onPlayerTick(PlayerTickEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+
+        if (player.tickCount % UPDATE_INTERVAL_TICKS != 0) {
+            return;
+        }
+        updateTemperature(player);
+    }
+
+    private void updateTemperature(ServerPlayer player) {
+        ServerLevel level = player.serverLevel();
+
+        int oldHeat = player.getData(
+                PrimordialAttachments.HEAT_EXPOSURE
+        );
+
+        int heat = oldHeat;
+
+        if (!player.isAlive()
+                || player.isCreative()
+                || player.isSpectator()) {
+            heat = 0;
+            thawPlayer(player);
+            finishUpdate(player, oldHeat, heat);
+            return;
+        }
+
+        Holder<Biome> biome = level.getBiome(
+                player.blockPosition()
+        );
+
+        boolean neutralBiome =
+                biome.is(PrimordialTags.Biomes.NEUTRAL)
+                        || biome.is(BiomeTags.IS_OCEAN);
+
+        if (neutralBiome) {
+            heat = recoverHeat(heat);
+            thawPlayer(player);
+        } else if (biome.is(PrimordialTags.Biomes.COLD)) {
+            heat = updateColdBiome(player, level, heat);
+        } else if (biome.is(PrimordialTags.Biomes.HOT)) {
+            heat = updateHotBiome(player, level, heat);
+        } else {
+            heat = recoverHeat(heat);
+            thawPlayer(player);
+        }
+
+        finishUpdate(player, oldHeat, heat);
+    }
+
+    private int updateColdBiome(
+            ServerPlayer player,
+            ServerLevel level,
+            int heat
+    ) {
+        boolean enclosed = isInsideEnclosedRoom(
+                level,
+                player.blockPosition()
+        );
+
+        if (enclosed) {
+            thawPlayer(player);
+            return recoverHeat(heat);
+        }
+
+        if (heat > 0) {
+            thawPlayer(player);
+            return recoverHeat(heat);
+        }
+
+        increaseFreezing(player);
+        return 0;
+    }
+
+    private int updateHotBiome(
+            ServerPlayer player,
+            ServerLevel level,
+            int heat
+    ) {
+        boolean exposedToSun =
+                level.isDay()
+                        && !player.isInWaterOrRain()
+                        && !hasShadeAbove(level, player);
+
+        if (!exposedToSun) {
+            thawPlayer(player);
+            return recoverHeat(heat);
+        }
+
+        if (player.getTicksFrozen() > 0) {
+            thawPlayer(player);
+            return heat;
+        }
+
+        return Math.min(MAX_HEAT, heat + EXPOSURE_STEP);
+    }
+
+    private void increaseFreezing(ServerPlayer player) {
+        int maximum = player.getTicksRequiredToFreeze();
+
+        player.setTicksFrozen(
+                Math.min(
+                        maximum,
+                        player.getTicksFrozen() + EXPOSURE_STEP
+                )
+        );
+    }
+
+    private void thawPlayer(ServerPlayer player) {
+
+        if (player.getInBlockState().is(Blocks.POWDER_SNOW)) {
+            return;
+        }
+
+        player.setTicksFrozen(
+                Math.max(
+                        0,
+                        player.getTicksFrozen() - RECOVERY_STEP
+                )
+        );
+    }
+
+    private int recoverHeat(int heat) {
+        return Math.max(0, heat - RECOVERY_STEP);
+    }
+
+    private void finishUpdate(
+            ServerPlayer player,
+            int oldHeat,
+            int newHeat
+    ) {
+        if (newHeat != oldHeat) {
+            player.setData(
+                    PrimordialAttachments.HEAT_EXPOSURE,
+                    newHeat
+            );
+        }
+
+        PacketDistributor.sendToPlayer(
+                player,
+                new TemperatureSyncPayload(newHeat)
+        );
+
+        if (newHeat >= MAX_HEAT
+                && player.tickCount
+                % HEAT_DAMAGE_INTERVAL_TICKS == 0) {
+            player.hurt(
+                    player.damageSources().generic(),
+                    HEAT_DAMAGE
+            );
+        }
+    }
+
+    private boolean hasShadeAbove(
+            ServerLevel level,
+            ServerPlayer player
+    ) {
+        int x = player.getBlockX();
+        int z = player.getBlockZ();
+
+        int startY = Mth.floor(player.getEyeY()) + 1;
+
+        int topY = level.getHeight(
+                Heightmap.Types.MOTION_BLOCKING,
+                x,
+                z
+        );
+
+        BlockPos.MutableBlockPos mutablePos =
+                new BlockPos.MutableBlockPos();
+
+        for (int y = startY; y < topY; y++) {
+            mutablePos.set(x, y, z);
+
+            BlockState state = level.getBlockState(mutablePos);
+
+            if (state.is(
+                    PrimordialTags.Blocks.DOES_NOT_PROVIDE_SHADE))
+            {
+                continue;
+            }
+
+            if (!state.getCollisionShape(level, mutablePos).isEmpty())
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isInsideEnclosedRoom(
+            ServerLevel level,
+            BlockPos playerPos
+    ) {
+        int minX = playerPos.getX() - ROOM_HORIZONTAL_RADIUS;
+        int maxX = playerPos.getX() + ROOM_HORIZONTAL_RADIUS;
+
+        int minZ = playerPos.getZ() - ROOM_HORIZONTAL_RADIUS;
+        int maxZ = playerPos.getZ() + ROOM_HORIZONTAL_RADIUS;
+
+        int minY = Math.max(
+                level.getMinBuildHeight(),
+                playerPos.getY() - ROOM_DOWN_RADIUS
+        );
+
+        int maxY = Math.min(
+                level.getMaxBuildHeight() - 1,
+                playerPos.getY() + ROOM_UP_RADIUS
+        );
+
+        Queue<BlockPos> open = new ArrayDeque<>();
+        Set<BlockPos> visited = new HashSet<>();
+
+        open.add(playerPos.immutable());
+
+        while (!open.isEmpty()) {
+            BlockPos current = open.remove();
+
+            if (!visited.add(current)) {
+                continue;
+            }
+
+            if (visited.size() > MAX_VISITED_ROOM_BLOCKS) {
+                return false;
+            }
+
+            if (!level.hasChunkAt(current)) {
+                return false;
+            }
+
+            if (isAtRoomSearchBoundary(
+                    current,
+                    minX,
+                    maxX,
+                    minY,
+                    maxY,
+                    minZ,
+                    maxZ
+            )) {
+                return false;
+            }
+
+            if (level.canSeeSky(current)) {
+                return false;
+            }
+
+            for (Direction direction : Direction.values()) {
+                BlockPos next = current.relative(direction);
+
+                if (visited.contains(next)) {
+                    continue;
+                }
+
+                if (!level.hasChunkAt(next)) {
+                    return false;
+                }
+
+                if (isAirPassage(level, next)) {
+                    open.add(next.immutable());
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isAtRoomSearchBoundary(
+            BlockPos pos,
+            int minX,
+            int maxX,
+            int minY,
+            int maxY,
+            int minZ,
+            int maxZ
+    ) {
+        return pos.getX() <= minX
+                || pos.getX() >= maxX
+                || pos.getY() <= minY
+                || pos.getY() >= maxY
+                || pos.getZ() <= minZ
+                || pos.getZ() >= maxZ;
+    }
+
+
+    private boolean isAirPassage(
+            ServerLevel level,
+            BlockPos pos
+    ) {
+        BlockState state = level.getBlockState(pos);
+
+        if (state.isAir()) {
+            return true;
+        }
+
+        if (!state.getFluidState().isEmpty()) {
+            return true;
+        }
+
+        /*
+         * Открытая дверь, калитка или люк пропускает воздух.
+         * Закрытая — перекрывает путь.
+         */
+        if (state.hasProperty(BlockStateProperties.OPEN)) {
+            return state.getValue(BlockStateProperties.OPEN);
+        }
+
+        /*
+         * Специальные блоки, которые не должны герметизировать
+         * помещение даже при наличии коллизии.
+         */
+        if (state.is(
+                PrimordialTags.Blocks.DOES_NOT_SEAL_ROOM
+        )) {
+            return true;
+        }
+
+        /*
+         * Любой блок с коллизией перекрывает путь flood fill.
+         * Благодаря этому плиты и ступени могут быть частью дома.
+         */
+        return state.getCollisionShape(level, pos).isEmpty();
+    }
+}
