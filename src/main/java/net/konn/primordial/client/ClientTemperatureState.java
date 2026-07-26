@@ -2,20 +2,35 @@ package net.konn.primordial.client;
 
 public final class ClientTemperatureState {
     public static final int MAX_HEAT = 140;
-    private static int heatExposure;
+
+    private static int targetHeatExposure;
+
+    private static float displayedHeatExposure;
+
+    private static final float SMOOTHING = 0.08F;
 
     private ClientTemperatureState() {
     }
 
     public static void setHeatExposure(int value) {
-        heatExposure = Math.clamp(value, 0, MAX_HEAT);
+        targetHeatExposure = Math.clamp(value, 0, MAX_HEAT);
+    }
+
+    public static void updateDisplayedHeat() {
+        displayedHeatExposure +=
+                (targetHeatExposure - displayedHeatExposure) * SMOOTHING;
+
+        if (Math.abs(targetHeatExposure - displayedHeatExposure) < 0.01F) {
+            displayedHeatExposure = targetHeatExposure;
+        }
     }
 
     public static float getHeatPercent() {
-        return heatExposure / (float) MAX_HEAT;
+        return displayedHeatExposure / MAX_HEAT;
     }
 
     public static void reset() {
-        heatExposure = 0;
+        targetHeatExposure = 0;
+        displayedHeatExposure = 0.0F;
     }
 }

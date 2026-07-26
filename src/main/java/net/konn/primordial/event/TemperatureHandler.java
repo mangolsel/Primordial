@@ -11,7 +11,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -28,6 +27,7 @@ import java.util.Set;
 public final class TemperatureHandler {
     private static final int UPDATE_INTERVAL_TICKS = 10;
     private static final int MAX_HEAT = 140;
+    private static final int MAX_COLD = 140;
     private static final int EXPOSURE_STEP = 1;
     private static final int RECOVERY_STEP = 3;
     private static final int HEAT_DAMAGE_INTERVAL_TICKS = 40;
@@ -44,10 +44,11 @@ public final class TemperatureHandler {
             return;
         }
 
-        if (player.tickCount % UPDATE_INTERVAL_TICKS != 0) {
-            return;
+        if (player.tickCount % UPDATE_INTERVAL_TICKS == 0) {
+            updateTemperature(player);
         }
-        updateTemperature(player);
+
+        maintainCustomFreezing(player);
     }
 
     private void updateTemperature(ServerPlayer player) {
@@ -57,14 +58,30 @@ public final class TemperatureHandler {
                 PrimordialAttachments.HEAT_EXPOSURE
         );
 
+        int oldCold = player.getData(
+                PrimordialAttachments.COLD_EXPOSURE
+        );
+
         int heat = oldHeat;
+        int cold = oldCold;
 
         if (!player.isAlive()
                 || player.isCreative()
                 || player.isSpectator()) {
+
             heat = 0;
-            thawPlayer(player);
-            finishUpdate(player, oldHeat, heat);
+            cold = 0;
+
+            player.setTicksFrozen(0);
+
+            finishUpdate(
+                    player,
+                    oldHeat,
+                    heat,
+                    oldCold,
+                    cold
+            );
+
             return;
         }
 
@@ -77,100 +94,100 @@ public final class TemperatureHandler {
                         || biome.is(BiomeTags.IS_OCEAN);
 
         if (neutralBiome) {
-            heat = recoverHeat(heat);
-            thawPlayer(player);
+            heat = recoverExposure(heat);
+            cold = recoverExposure(cold);
+
         } else if (biome.is(PrimordialTags.Biomes.COLD)) {
-            heat = updateColdBiome(player, level, heat);
+            boolean enclosed = isInsideEnclosedRoom(
+                    level,
+                    player.blockPosition()
+            );
+
+            if (enclosed) {
+                heat = recoverExposure(heat);
+                cold = recoverExposure(cold);
+
+            } else if (heat > 0) {
+
+                heat = recoverExposure(heat);
+
+            } else {
+                cold = Math.min(
+                        MAX_COLD,
+                        cold + EXPOSURE_STEP
+                );
+            }
+
         } else if (biome.is(PrimordialTags.Biomes.HOT)) {
-            heat = updateHotBiome(player, level, heat);
+            boolean exposedToSun =
+                    level.isDay()
+                            && !player.isInWaterOrRain()
+                            && !hasShadeAbove(level, player);
+
+            if (!exposedToSun) {
+                heat = recoverExposure(heat);
+                cold = recoverExposure(cold);
+
+            } else if (cold > 0) {
+
+                cold = recoverExposure(cold);
+
+            } else {
+                heat = Math.min(
+                        MAX_HEAT,
+                        heat + EXPOSURE_STEP
+                );
+            }
+
         } else {
-            heat = recoverHeat(heat);
-            thawPlayer(player);
+            heat = recoverExposure(heat);
+            cold = recoverExposure(cold);
         }
 
-        finishUpdate(player, oldHeat, heat);
-    }
-
-    private int updateColdBiome(
-            ServerPlayer player,
-            ServerLevel level,
-            int heat
-    ) {
-        boolean enclosed = isInsideEnclosedRoom(
-                level,
-                player.blockPosition()
-        );
-
-        if (enclosed) {
-            thawPlayer(player);
-            return recoverHeat(heat);
-        }
-
-        if (heat > 0) {
-            thawPlayer(player);
-            return recoverHeat(heat);
-        }
-
-        increaseFreezing(player);
-        return 0;
-    }
-
-    private int updateHotBiome(
-            ServerPlayer player,
-            ServerLevel level,
-            int heat
-    ) {
-        boolean exposedToSun =
-                level.isDay()
-                        && !player.isInWaterOrRain()
-                        && !hasShadeAbove(level, player);
-
-        if (!exposedToSun) {
-            thawPlayer(player);
-            return recoverHeat(heat);
-        }
-
-        if (player.getTicksFrozen() > 0) {
-            thawPlayer(player);
-            return heat;
-        }
-
-        return Math.min(MAX_HEAT, heat + EXPOSURE_STEP);
-    }
-
-    private void increaseFreezing(ServerPlayer player) {
-        int maximum = player.getTicksRequiredToFreeze();
-
-        player.setTicksFrozen(
-                Math.min(
-                        maximum,
-                        player.getTicksFrozen() + EXPOSURE_STEP
-                )
+        finishUpdate(
+                player,
+                oldHeat,
+                heat,
+                oldCold,
+                cold
         );
     }
-
-    private void thawPlayer(ServerPlayer player) {
+    private void maintainCustomFreezing(ServerPlayer player) {
 
         if (player.getInBlockState().is(Blocks.POWDER_SNOW)) {
             return;
         }
 
-        player.setTicksFrozen(
-                Math.max(
-                        0,
-                        player.getTicksFrozen() - RECOVERY_STEP
-                )
+        int coldExposure = player.getData(
+                PrimordialAttachments.COLD_EXPOSURE
         );
+
+        int requiredTicks = player.getTicksRequiredToFreeze();
+
+        int targetFrozenTicks = Math.clamp(
+                coldExposure,
+                0,
+                requiredTicks
+        );
+
+        if (player.getTicksFrozen() < targetFrozenTicks) {
+            player.setTicksFrozen(targetFrozenTicks);
+        }
     }
 
-    private int recoverHeat(int heat) {
-        return Math.max(0, heat - RECOVERY_STEP);
+    private int recoverExposure(int exposure) {
+        return Math.max(
+                0,
+                exposure - RECOVERY_STEP
+        );
     }
 
     private void finishUpdate(
             ServerPlayer player,
             int oldHeat,
-            int newHeat
+            int newHeat,
+            int oldCold,
+            int newCold
     ) {
         if (newHeat != oldHeat) {
             player.setData(
@@ -178,6 +195,14 @@ public final class TemperatureHandler {
                     newHeat
             );
         }
+
+        if (newCold != oldCold) {
+            player.setData(
+                    PrimordialAttachments.COLD_EXPOSURE,
+                    newCold
+            );
+        }
+
 
         PacketDistributor.sendToPlayer(
                 player,
@@ -187,6 +212,7 @@ public final class TemperatureHandler {
         if (newHeat >= MAX_HEAT
                 && player.tickCount
                 % HEAT_DAMAGE_INTERVAL_TICKS == 0) {
+
             player.hurt(
                     player.damageSources().generic(),
                     HEAT_DAMAGE
@@ -340,28 +366,16 @@ public final class TemperatureHandler {
             return true;
         }
 
-        /*
-         * Открытая дверь, калитка или люк пропускает воздух.
-         * Закрытая — перекрывает путь.
-         */
         if (state.hasProperty(BlockStateProperties.OPEN)) {
             return state.getValue(BlockStateProperties.OPEN);
         }
 
-        /*
-         * Специальные блоки, которые не должны герметизировать
-         * помещение даже при наличии коллизии.
-         */
         if (state.is(
                 PrimordialTags.Blocks.DOES_NOT_SEAL_ROOM
         )) {
             return true;
         }
 
-        /*
-         * Любой блок с коллизией перекрывает путь flood fill.
-         * Благодаря этому плиты и ступени могут быть частью дома.
-         */
         return state.getCollisionShape(level, pos).isEmpty();
     }
 }

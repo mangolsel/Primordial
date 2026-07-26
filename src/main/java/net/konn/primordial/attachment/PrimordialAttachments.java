@@ -24,6 +24,14 @@ public final class PrimordialAttachments {
                             .serialize(Codec.INT)
                             .build()
             );
+    public static final Supplier<AttachmentType<Integer>> COLD_EXPOSURE =
+            ATTACHMENT_TYPES.register(
+                    "cold_exposure",
+                    () -> AttachmentType
+                            .builder(() -> 0)
+                            .serialize(Codec.INT)
+                            .build()
+            );
 
     private PrimordialAttachments() {
     }

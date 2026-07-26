@@ -1,5 +1,6 @@
 package net.konn.primordial;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.konn.primordial.client.ClientTemperatureState;
 import net.konn.primordial.client.TemperatureHudRenderer;
 import net.minecraft.client.Minecraft;
@@ -81,18 +82,34 @@ public class PrimordialModClient {
             return;
         }
 
+        /*
+         * Плавно приближаем отображаемое значение
+         * к значению, полученному от сервера.
+         */
+        ClientTemperatureState.updateDisplayedHeat();
+
         float heatPercent = Mth.clamp(
                 ClientTemperatureState.getHeatPercent(),
                 0.0F,
                 1.0F
         );
 
-        if (heatPercent <= 0.0F) {
+        /*
+         * Первые 3% перегрева показываются только на индикаторе.
+         * Рамка начинает проявляться немного позже.
+         */
+        float visibleHeat = Mth.clamp(
+                (heatPercent - 0.03F) / 0.97F,
+                0.0F,
+                1.0F
+        );
+
+        if (visibleHeat <= 0.0F) {
             return;
         }
 
         float opacity = Mth.clamp(
-                heatPercent * heatPercent * 0.9F,
+                visibleHeat * visibleHeat * 0.9F,
                 0.0F,
                 0.9F
         );
@@ -100,6 +117,12 @@ public class PrimordialModClient {
         int screenWidth = guiGraphics.guiWidth();
         int screenHeight = guiGraphics.guiHeight();
 
+        /*
+         * Не полагаемся на состояние, оставленное другими
+         * элементами HUD. Явно включаем альфа-смешивание.
+         */
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
 
         guiGraphics.setColor(
                 1.0F,
@@ -109,38 +132,28 @@ public class PrimordialModClient {
         );
 
         try {
-
             guiGraphics.blit(
                     HEAT_OVERLAY_TEXTURE,
-
-
                     0,
                     0,
-
-
                     screenWidth,
                     screenHeight,
-
-
                     0.0F,
                     0.0F,
-
-
                     HEAT_TEXTURE_WIDTH,
                     HEAT_TEXTURE_HEIGHT,
-
-
                     HEAT_TEXTURE_WIDTH,
                     HEAT_TEXTURE_HEIGHT
             );
         } finally {
-
             guiGraphics.setColor(
                     1.0F,
                     1.0F,
                     1.0F,
                     1.0F
             );
+
+            RenderSystem.disableBlend();
         }
     }
 
