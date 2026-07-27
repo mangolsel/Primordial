@@ -1,39 +1,90 @@
 package net.konn.primordial.client;
 
+import net.konn.primordial.event.TemperatureConstants;
+import net.minecraft.util.Mth;
+
 public final class ClientTemperatureState {
-    public static final int MAX_HEAT = 140;
+    private static final float SMOOTHING = 0.08F;
 
     private static int targetHeatExposure;
+    private static int targetColdExposure;
 
     private static float displayedHeatExposure;
-
-    private static final float SMOOTHING = 0.08F;
+    private static float displayedColdExposure;
 
     private ClientTemperatureState() {
     }
 
+    public static void setExposure(
+            int heatExposure,
+            int coldExposure
+    ) {
+        targetHeatExposure = Mth.clamp(
+                heatExposure,
+                0,
+                TemperatureConstants.MAX_EXPOSURE
+        );
 
-    public static void setHeatExposure(int value) {
-        targetHeatExposure = Math.clamp(value, 0, MAX_HEAT);
+        targetColdExposure = Mth.clamp(
+                coldExposure,
+                0,
+                TemperatureConstants.MAX_EXPOSURE
+        );
     }
+
     public static void tick() {
         displayedHeatExposure +=
-                (targetHeatExposure - displayedHeatExposure) * 0.08F;
+                (targetHeatExposure
+                        - displayedHeatExposure)
+                        * SMOOTHING;
+
+        displayedColdExposure +=
+                (targetColdExposure
+                        - displayedColdExposure)
+                        * SMOOTHING;
 
         if (Math.abs(
-                targetHeatExposure - displayedHeatExposure
+                targetHeatExposure
+                        - displayedHeatExposure
         ) < 0.01F) {
-            displayedHeatExposure = targetHeatExposure;
+            displayedHeatExposure =
+                    targetHeatExposure;
+        }
+
+        if (Math.abs(
+                targetColdExposure
+                        - displayedColdExposure
+        ) < 0.01F) {
+            displayedColdExposure =
+                    targetColdExposure;
         }
     }
 
-
     public static float getHeatPercent() {
-        return displayedHeatExposure / MAX_HEAT;
+        return Mth.clamp(
+                displayedHeatExposure
+                        / TemperatureConstants
+                        .MAX_EXPOSURE,
+                0.0F,
+                1.0F
+        );
+    }
+
+    public static float getColdPercent() {
+        return Mth.clamp(
+                displayedColdExposure
+                        / TemperatureConstants
+                        .MAX_EXPOSURE,
+                0.0F,
+                1.0F
+        );
     }
 
     public static void reset() {
         targetHeatExposure = 0;
+        targetColdExposure = 0;
+
         displayedHeatExposure = 0.0F;
+        displayedColdExposure = 0.0F;
     }
 }

@@ -17,8 +17,9 @@ public final class PrimordialNetworking {
                 TemperatureSyncPayload.TYPE,
                 TemperatureSyncPayload.STREAM_CODEC,
                 (payload, context) ->
-                        ClientTemperatureState.setHeatExposure(
-                                payload.heatExposure()
+                        ClientTemperatureState.setExposure(
+                                payload.heatExposure(),
+                                payload.coldExposure()
                         )
         );
     }

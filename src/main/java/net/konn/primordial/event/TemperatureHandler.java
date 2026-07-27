@@ -28,8 +28,11 @@ public final class TemperatureHandler {
     private static final int COLD_DAMAGE_INTERVAL_TICKS = 40;
     private static final float COLD_DAMAGE = 1.0F;
     private static final int UPDATE_INTERVAL_TICKS = 10;
-    private static final int MAX_HEAT = 140;
-    private static final int MAX_COLD = 140;
+    private static final int MAX_HEAT =
+            TemperatureConstants.MAX_EXPOSURE;
+
+    private static final int MAX_COLD =
+            TemperatureConstants.MAX_EXPOSURE;
     private static final int EXPOSURE_STEP = 1;
     private static final int RECOVERY_STEP = 3;
     private static final int HEAT_DAMAGE_INTERVAL_TICKS = 40;
@@ -68,7 +71,8 @@ public final class TemperatureHandler {
                 PrimordialAttachments.COLD_EXPOSURE
         );
 
-        if (coldExposure < MAX_COLD) {
+        if (coldExposure
+                < TemperatureConstants.DAMAGE_THRESHOLD) {
             return;
         }
 
@@ -188,7 +192,6 @@ public final class TemperatureHandler {
         );
     }
     private void maintainCustomFreezing(ServerPlayer player) {
-
         if (player.getInBlockState().is(Blocks.POWDER_SNOW)) {
             return;
         }
@@ -197,12 +200,19 @@ public final class TemperatureHandler {
                 PrimordialAttachments.COLD_EXPOSURE
         );
 
-        int requiredTicks = player.getTicksRequiredToFreeze();
+        int requiredTicks =
+                player.getTicksRequiredToFreeze();
 
-        int targetFrozenTicks = Math.clamp(
-                coldExposure,
-                0,
-                requiredTicks
+        float freezeProgress = Mth.clamp(
+                coldExposure
+                        / (float) TemperatureConstants
+                        .DAMAGE_THRESHOLD,
+                0.0F,
+                1.0F
+        );
+
+        int targetFrozenTicks = Math.round(
+                freezeProgress * requiredTicks
         );
 
         if (player.getTicksFrozen() < targetFrozenTicks) {
@@ -241,10 +251,14 @@ public final class TemperatureHandler {
 
         PacketDistributor.sendToPlayer(
                 player,
-                new TemperatureSyncPayload(newHeat)
+                new TemperatureSyncPayload(
+                        newHeat,
+                        newCold
+                )
         );
 
-        if (newHeat >= MAX_HEAT
+        if (newHeat
+                >= TemperatureConstants.DAMAGE_THRESHOLD
                 && player.tickCount
                 % HEAT_DAMAGE_INTERVAL_TICKS == 0) {
 

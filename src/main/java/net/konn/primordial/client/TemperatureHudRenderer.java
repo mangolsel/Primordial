@@ -2,6 +2,7 @@ package net.konn.primordial.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.konn.primordial.PrimordialMod;
+import net.konn.primordial.event.TemperatureConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -33,9 +34,17 @@ public final class TemperatureHudRenderer {
                     "textures/gui/line.png"
             );
 
-    private static final int HOT_LINE_Y = 5;
+    private static final int HOT_LINE_Y = 0;
+    private static final int HOT_DAMAGE_LINE_Y = 13;
+
     private static final int NEUTRAL_LINE_Y = 34;
+
+    private static final int COLD_DAMAGE_LINE_Y = 57;
     private static final int COLD_LINE_Y = 68;
+
+    private static final float DAMAGE_POINT =
+            TemperatureConstants.DAMAGE_THRESHOLD
+                    / (float) TemperatureConstants.MAX_EXPOSURE;
 
     private static final int REVEAL_SPLIT_Y = 34;
 
@@ -59,14 +68,8 @@ public final class TemperatureHudRenderer {
                 1.0F
         );
 
-        int requiredFreezeTicks =
-                minecraft.player.getTicksRequiredToFreeze();
-
-        float coldPercent = requiredFreezeTicks <= 0
-                ? 0.0F
-                : Mth.clamp(
-                minecraft.player.getTicksFrozen()
-                        / (float) requiredFreezeTicks,
+        float coldPercent = Mth.clamp(
+                ClientTemperatureState.getColdPercent(),
                 0.0F,
                 1.0F
         );
@@ -106,26 +109,65 @@ public final class TemperatureHudRenderer {
         );
 
         if (signedTemperature > 0.0F) {
-            return Math.round(
-                    Mth.lerp(
-                            signedTemperature,
-                            NEUTRAL_LINE_Y,
-                            HOT_LINE_Y
-                    )
+            return calculateTwoStageLine(
+                    signedTemperature,
+                    HOT_DAMAGE_LINE_Y,
+                    HOT_LINE_Y
             );
         }
 
         if (signedTemperature < 0.0F) {
-            return Math.round(
-                    Mth.lerp(
-                            -signedTemperature,
-                            NEUTRAL_LINE_Y,
-                            COLD_LINE_Y
-                    )
+            return calculateTwoStageLine(
+                    -signedTemperature,
+                    COLD_DAMAGE_LINE_Y,
+                    COLD_LINE_Y
             );
         }
 
         return NEUTRAL_LINE_Y;
+    }
+    private static int calculateTwoStageLine(
+            float exposure,
+            int damageY,
+            int maximumY
+    ) {
+        exposure = Mth.clamp(
+                exposure,
+                0.0F,
+                1.0F
+        );
+
+        /*
+         * Этап 1:
+         * нейтральная линия → край корпуса.
+         */
+        if (exposure <= DAMAGE_POINT) {
+            float progress = exposure / DAMAGE_POINT;
+
+            return Math.round(
+                    Mth.lerp(
+                            progress,
+                            TemperatureHudRenderer.NEUTRAL_LINE_Y,
+                            damageY
+                    )
+            );
+        }
+
+        /*
+         * Этап 2:
+         * край корпуса → конец огня или сосулек.
+         */
+        float dangerProgress =
+                (exposure - DAMAGE_POINT)
+                        / (1.0F - DAMAGE_POINT);
+
+        return Math.round(
+                Mth.lerp(
+                        dangerProgress,
+                        damageY,
+                        maximumY
+                )
+        );
     }
     private static void drawTemperatureLine(
             GuiGraphics guiGraphics,
