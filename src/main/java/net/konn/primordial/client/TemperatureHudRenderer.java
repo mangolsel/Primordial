@@ -1,19 +1,45 @@
 package net.konn.primordial.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.konn.primordial.PrimordialMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 public final class TemperatureHudRenderer {
-    private static final int BAR_WIDTH = 8;
-    private static final int BAR_HEIGHT = 52;
 
-    private static final int BORDER_COLOR = 0xD0000000;
-    private static final int BACKGROUND_COLOR = 0xA0181818;
+    private static final int TEXTURE_WIDTH = 16;
+    private static final int TEXTURE_HEIGHT = 70;
 
-    private static final int HOT_COLOR = 0xFFE45A3B;
-    private static final int COLD_COLOR = 0xFF65BCEB;
-    private static final int NEUTRAL_COLOR = 0xFFE2D49A;
+    private static final int LINE_SOURCE_Y = 34;
+    private static final int LINE_HEIGHT = 2;
+
+    private static final ResourceLocation THERMOMETER_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(
+                    PrimordialMod.MOD_ID,
+                    "textures/gui/termometer.png"
+            );
+
+    private static final ResourceLocation TEMPERATURE_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(
+                    PrimordialMod.MOD_ID,
+                    "textures/gui/temperature.png"
+            );
+
+    private static final ResourceLocation LINE_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(
+                    PrimordialMod.MOD_ID,
+                    "textures/gui/line.png"
+            );
+
+    private static final int HOT_LINE_Y = 5;
+    private static final int NEUTRAL_LINE_Y = 34;
+    private static final int COLD_LINE_Y = 68;
+
+    private static final int REVEAL_SPLIT_Y = 34;
+
+    private static final int RIGHT_MARGIN = 6;
 
     private TemperatureHudRenderer() {
     }
@@ -22,19 +48,10 @@ public final class TemperatureHudRenderer {
         Minecraft minecraft = Minecraft.getInstance();
 
         if (minecraft.player == null
+                || minecraft.level == null
                 || minecraft.options.hideGui) {
             return;
         }
-
-        int screenWidth =
-                minecraft.getWindow().getGuiScaledWidth();
-
-        int screenHeight =
-                minecraft.getWindow().getGuiScaledHeight();
-
-
-        int x = screenWidth - BAR_WIDTH - 6;
-        int y = screenHeight / 2 - BAR_HEIGHT / 2;
 
         float heatPercent = Mth.clamp(
                 ClientTemperatureState.getHeatPercent(),
@@ -54,104 +71,228 @@ public final class TemperatureHudRenderer {
                 1.0F
         );
 
-        drawBackground(guiGraphics, x, y);
-
+        float signedTemperature;
 
         if (heatPercent >= coldPercent) {
-            drawHeat(guiGraphics, x, y, heatPercent);
+            signedTemperature = heatPercent;
         } else {
-            drawCold(guiGraphics, x, y, coldPercent);
+            signedTemperature = -coldPercent;
         }
+
+        int screenWidth = guiGraphics.guiWidth();
+        int screenHeight = guiGraphics.guiHeight();
+
+        int x = screenWidth - TEXTURE_WIDTH - RIGHT_MARGIN;
+        int y = screenHeight / 2 - TEXTURE_HEIGHT / 2;
+
+        int lineY = calculateLineY(signedTemperature);
+
+        renderThermometer(
+                guiGraphics,
+                x,
+                y,
+                lineY,
+                signedTemperature
+        );
     }
 
-    private static void drawBackground(
+    private static int calculateLineY(
+            float signedTemperature
+    ) {
+        signedTemperature = Mth.clamp(
+                signedTemperature,
+                -1.0F,
+                1.0F
+        );
+
+        if (signedTemperature > 0.0F) {
+            return Math.round(
+                    Mth.lerp(
+                            signedTemperature,
+                            NEUTRAL_LINE_Y,
+                            HOT_LINE_Y
+                    )
+            );
+        }
+
+        if (signedTemperature < 0.0F) {
+            return Math.round(
+                    Mth.lerp(
+                            -signedTemperature,
+                            NEUTRAL_LINE_Y,
+                            COLD_LINE_Y
+                    )
+            );
+        }
+
+        return NEUTRAL_LINE_Y;
+    }
+    private static void drawTemperatureLine(
             GuiGraphics guiGraphics,
             int x,
             int y
     ) {
-        guiGraphics.fill(
+        guiGraphics.blit(
+                LINE_TEXTURE,
+
+                // Положение на экране
                 x,
                 y,
-                x + BAR_WIDTH,
-                y + BAR_HEIGHT,
-                BORDER_COLOR
-        );
 
-        guiGraphics.fill(
-                x + 1,
-                y + 1,
-                x + BAR_WIDTH - 1,
-                y + BAR_HEIGHT - 1,
-                BACKGROUND_COLOR
-        );
+                // Размер отображаемой части
+                TEXTURE_WIDTH,
+                LINE_HEIGHT,
 
-        int centerY = y + BAR_HEIGHT / 2;
+                // Начало области внутри line.png
+                0.0F,
+                LINE_SOURCE_Y,
 
+                // Размер области внутри line.png
+                TEXTURE_WIDTH,
+                LINE_HEIGHT,
 
-        guiGraphics.fill(
-                x + 1,
-                centerY,
-                x + BAR_WIDTH - 1,
-                centerY + 1,
-                NEUTRAL_COLOR
+                // Полный размер line.png
+                TEXTURE_WIDTH,
+                TEXTURE_HEIGHT
         );
     }
 
-    private static void drawHeat(
+    private static void renderThermometer(
             GuiGraphics guiGraphics,
             int x,
             int y,
-            float heatPercent
+            int lineY,
+            float signedTemperature
     ) {
-        if (heatPercent <= 0.0F) {
-            return;
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+
+        guiGraphics.pose().pushPose();
+
+        try {
+            /*
+             * Слой 1: рамка термометра.
+             */
+            guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+            blitFullTexture(
+                    guiGraphics,
+                    THERMOMETER_TEXTURE,
+                    x,
+                    y
+            );
+
+            /*
+             * Слой 2: цветной рисунок.
+             * Рисуем только ту часть, которая должна быть
+             * раскрыта красной линией.
+             */
+            guiGraphics.pose().translate(0.0F, 0.0F, 1.0F);
+
+            if (signedTemperature > 0.0F) {
+                /*
+                 * Жара:
+                 * раскрываем область от текущей линии
+                 * до центральной точки.
+                 */
+                int revealTop = y + lineY;
+                int revealBottom = y + REVEAL_SPLIT_Y;
+
+                if (revealTop < revealBottom) {
+                    guiGraphics.enableScissor(
+                            x,
+                            revealTop,
+                            x + TEXTURE_WIDTH,
+                            revealBottom
+                    );
+
+                    try {
+                        blitFullTexture(
+                                guiGraphics,
+                                TEMPERATURE_TEXTURE,
+                                x,
+                                y
+                        );
+                    } finally {
+                        guiGraphics.disableScissor();
+                    }
+                }
+            } else if (signedTemperature < 0.0F) {
+                /*
+                 * Холод:
+                 * раскрываем область от центральной точки
+                 * вниз до текущей линии.
+                 */
+                int revealTop = y + REVEAL_SPLIT_Y;
+                int revealBottom = y + lineY;
+
+                if (revealTop < revealBottom) {
+                    guiGraphics.enableScissor(
+                            x,
+                            revealTop,
+                            x + TEXTURE_WIDTH,
+                            revealBottom
+                    );
+
+                    try {
+                        blitFullTexture(
+                                guiGraphics,
+                                TEMPERATURE_TEXTURE,
+                                x,
+                                y
+                        );
+                    } finally {
+                        guiGraphics.disableScissor();
+                    }
+                }
+            }
+
+            /*
+             * Слой 3: красная линия поверх всего.
+             */
+            guiGraphics.pose().translate(0.0F, 0.0F, 1.0F);
+
+            drawTemperatureLine(
+                    guiGraphics,
+                    x,
+                    y + lineY
+            );
+
+        } finally {
+            guiGraphics.pose().popPose();
+            guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.disableBlend();
         }
-
-        int centerY = y + BAR_HEIGHT / 2;
-        int topY = y + 2;
-
-        int availablePixels = centerY - topY;
-
-        int filledPixels = Math.max(
-                1,
-                Mth.ceil(heatPercent * availablePixels)
-        );
-
-        guiGraphics.fill(
-                x + 2,
-                centerY - filledPixels,
-                x + BAR_WIDTH - 2,
-                centerY,
-                HOT_COLOR
-        );
     }
 
-    private static void drawCold(
+    private static void blitFullTexture(
             GuiGraphics guiGraphics,
+            ResourceLocation texture,
             int x,
-            int y,
-            float coldPercent
+            int y
     ) {
-        if (coldPercent <= 0.0F) {
-            return;
-        }
+        guiGraphics.blit(
+                texture,
 
-        int centerY = y + BAR_HEIGHT / 2;
-        int bottomY = y + BAR_HEIGHT - 2;
+                // Положение на экране
+                x,
+                y,
 
-        int availablePixels = bottomY - centerY;
+                // Размер на экране
+                TEXTURE_WIDTH,
+                TEXTURE_HEIGHT,
 
-        int filledPixels = Math.max(
-                1,
-                Mth.ceil(coldPercent * availablePixels)
-        );
+                // Начало изображения
+                0.0F,
+                0.0F,
 
-        guiGraphics.fill(
-                x + 2,
-                centerY + 1,
-                x + BAR_WIDTH - 2,
-                centerY + 1 + filledPixels,
-                COLD_COLOR
+                // Используемая область изображения
+                TEXTURE_WIDTH,
+                TEXTURE_HEIGHT,
+
+                // Полный размер PNG
+                TEXTURE_WIDTH,
+                TEXTURE_HEIGHT
         );
     }
 }
