@@ -6,10 +6,10 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -27,7 +27,7 @@ public class Primordial_ArmorMaterials {
                         map.put(ArmorItem.Type.LEGGINGS, 1);
                         map.put(ArmorItem.Type.CHESTPLATE, 2);
                         map.put(ArmorItem.Type.HELMET, 1);
-                    }), 5, SoundEvents.ARMOR_EQUIP_LEATHER, () -> Ingredient.of(Blocks.WHITE_WOOL),
+                    }), 5, SoundEvents.ARMOR_EQUIP_LEATHER, () -> Ingredient.of(ItemTags.WOOL),
                     List.of(new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(PrimordialMod.MOD_ID, "wool"))),
                     0,0));
 

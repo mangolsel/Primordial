@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "A": {
-      "item": "minecraft:white_wool"
+      "tag": "minecraft:wool"
     }
   },
   "pattern": [

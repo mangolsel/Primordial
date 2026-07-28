@@ -65,11 +65,22 @@ public final class TemperatureHandler {
             return;
         }
 
-        int coldExposure = player.getData(
+        int rawHeat = player.getData(
+                PrimordialAttachments.HEAT_EXPOSURE
+        );
+
+        int rawCold = player.getData(
                 PrimordialAttachments.COLD_EXPOSURE
         );
 
-        if (coldExposure
+        ExposureState effective =
+                getEffectiveExposure(
+                        player,
+                        rawHeat,
+                        rawCold
+                );
+
+        if (effective.cold()
                 < TemperatureConstants.DAMAGE_THRESHOLD) {
             return;
         }
@@ -340,9 +351,22 @@ public final class TemperatureHandler {
             return;
         }
 
-        int coldExposure = player.getData(
+        int rawHeat = player.getData(
+                PrimordialAttachments.HEAT_EXPOSURE
+        );
+
+        int rawCold = player.getData(
                 PrimordialAttachments.COLD_EXPOSURE
         );
+
+        ExposureState effective =
+                getEffectiveExposure(
+                        player,
+                        rawHeat,
+                        rawCold
+                );
+
+        int coldExposure = effective.cold();
 
         int requiredTicks =
                 player.getTicksRequiredToFreeze();
@@ -392,16 +416,22 @@ public final class TemperatureHandler {
             );
         }
 
+        ExposureState effective =
+                getEffectiveExposure(
+                        player,
+                        newHeat,
+                        newCold
+                );
 
         PacketDistributor.sendToPlayer(
                 player,
                 new TemperatureSyncPayload(
-                        newHeat,
-                        newCold
+                        effective.heat(),
+                        effective.cold()
                 )
         );
 
-        if (newHeat
+        if (effective.heat()
                 >= TemperatureConstants.DAMAGE_THRESHOLD
                 && player.tickCount
                 % HEAT_DAMAGE_INTERVAL_TICKS == 0) {
@@ -571,5 +601,35 @@ public final class TemperatureHandler {
             int heat,
             int cold
     ) {
+    }
+    private ExposureState getEffectiveExposure(
+            ServerPlayer player,
+            int rawHeat,
+            int rawCold
+    ) {
+        int clothingModifier =
+                TemperatureEquipment.getTotalModifier(player);
+
+        int signedTemperature =
+                rawHeat
+                        - rawCold
+                        + clothingModifier;
+
+        signedTemperature = Mth.clamp(
+                signedTemperature,
+                -TemperatureConstants.MAX_EXPOSURE,
+                TemperatureConstants.MAX_EXPOSURE
+        );
+
+        int effectiveHeat =
+                Math.max(0, signedTemperature);
+
+        int effectiveCold =
+                Math.max(0, -signedTemperature);
+
+        return new ExposureState(
+                effectiveHeat,
+                effectiveCold
+        );
     }
 }
