@@ -49,6 +49,20 @@ public class Primordial_Items {
                     new Item.Properties()
                             .durability(20)
                             .attributes(HoeItem.createAttributes(Tiers.STONE, 4,-3.2f))));
+    //ARMOR
+
+    public static final DeferredItem<Item> WOOL_HELMET = ITEMS.register("wool_helmet",
+            () -> new ArmorItem(Primordial_ArmorMaterials.WOOL, ArmorItem.Type.HELMET,
+                    new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(3))));
+    public static final DeferredItem<Item> WOOL_CHESTPLATE = ITEMS.register("wool_chestplate",
+            () -> new ArmorItem(Primordial_ArmorMaterials.WOOL, ArmorItem.Type.CHESTPLATE,
+                    new Item.Properties().durability(ArmorItem.Type.CHESTPLATE.getDurability(3))));
+    public static final DeferredItem<Item> WOOL_LEGGINGS = ITEMS.register("wool_leggings",
+            () -> new ArmorItem(Primordial_ArmorMaterials.WOOL, ArmorItem.Type.LEGGINGS,
+                    new Item.Properties().durability(ArmorItem.Type.LEGGINGS.getDurability(3))));
+    public static final DeferredItem<Item> WOOL_BOOTS = ITEMS.register("wool_boots",
+            () -> new ArmorItem(Primordial_ArmorMaterials.WOOL, ArmorItem.Type.BOOTS,
+                    new Item.Properties().durability(ArmorItem.Type.BOOTS.getDurability(3))));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

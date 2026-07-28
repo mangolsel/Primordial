@@ -9,6 +9,7 @@ import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
@@ -20,13 +21,15 @@ public class ModItemTagProvider extends ItemTagsProvider {
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider provider) {
+    protected void addTags(HolderLookup.@NotNull Provider provider) {
         tag(PrimordialTags.Items.PRIMORDIAL_ITEMS)
                 .add(Primordial_Items.PRIMAL_AXE.get())
                 .add(Primordial_Items.PRIMAL_HOE.get())
                 .add(Primordial_Items.PRIMAL_SWORD.get())
                 .add(Primordial_Items.PRIMAL_SHOVEL.get())
                 .add(Primordial_Items.PRIMAL_PICKAXE.get());
+
+
 
         tag(ItemTags.AXES)
                 .add(Primordial_Items.PRIMAL_AXE.get());

@@ -45,8 +45,14 @@ public class Primordial_CreativeModeTabs {
                         output.accept(Primordial_Items.PRIMAL_AXE);
                         output.accept(Primordial_Items.PRIMAL_HOE);
                         output.accept(Primordial_Items.STONE_HAMMER);
+                        output.accept(Primordial_Items.WOOL_HELMET);
+                        output.accept(Primordial_Items.WOOL_CHESTPLATE);
+                        output.accept(Primordial_Items.WOOL_LEGGINGS);
+                        output.accept(Primordial_Items.WOOL_BOOTS);
+
                     })
                     .build());
+
 
     public static final Supplier<CreativeModeTab> PRIMORDIAL_BLOCKS_TAB =
             CREATIVE_MODE_TABS.register("primordial_blocks_tab",() -> CreativeModeTab.builder()

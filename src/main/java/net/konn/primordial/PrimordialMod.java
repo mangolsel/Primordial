@@ -4,15 +4,13 @@ import net.konn.primordial.attachment.PrimordialAttachments;
 import net.konn.primordial.block.Primordial_Blocks;
 import net.konn.primordial.event.BareHandMiningHandler;
 import net.konn.primordial.event.TemperatureHandler;
+import net.konn.primordial.item.Primordial_ArmorMaterials;
 import net.konn.primordial.item.Primordial_CreativeModeTabs;
 import net.konn.primordial.item.Primordial_Items;
 import net.konn.primordial.network.PrimordialNetworking;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
+import net.konn.primordial.temperature.PrimordialHeatSources;
 import org.slf4j.Logger;
-
 import com.mojang.logging.LogUtils;
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
@@ -22,7 +20,6 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 @Mod(PrimordialMod.MOD_ID)
@@ -38,6 +35,7 @@ public class PrimordialMod {
         Primordial_Items.register(modEventBus);
         Primordial_Blocks.register(modEventBus);
         PrimordialAttachments.register(modEventBus);
+        Primordial_ArmorMaterials.register(modEventBus);
 
 
         NeoForge.EVENT_BUS.register(this);
@@ -45,14 +43,13 @@ public class PrimordialMod {
         NeoForge.EVENT_BUS.register(new TemperatureHandler());
 
 
-
-        modEventBus.addListener(this::addCreative);
-
-
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(
+                PrimordialHeatSources::registerDefaults
+        );
         LOGGER.info("HELLO FROM COMMON SETUP");
 
         if (Config.LOG_DIRT_BLOCK.getAsBoolean()) {
@@ -62,13 +59,6 @@ public class PrimordialMod {
         LOGGER.info("{}{}", Config.MAGIC_NUMBER_INTRODUCTION.get(), Config.MAGIC_NUMBER.getAsInt());
 
         Config.ITEM_STRINGS.get().forEach((item) -> LOGGER.info("ITEM >> {}", item));
-    }
-
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if(event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
-            event.accept(Primordial_Items.TIN_INGOT);
-            event.accept(Primordial_Items.RAW_CASSITERITE);
-        }
     }
 
     @SubscribeEvent

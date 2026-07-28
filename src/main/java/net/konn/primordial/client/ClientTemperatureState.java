@@ -1,6 +1,6 @@
 package net.konn.primordial.client;
 
-import net.konn.primordial.event.TemperatureConstants;
+import net.konn.primordial.temperature.TemperatureConstants;
 import net.minecraft.util.Mth;
 
 public final class ClientTemperatureState {

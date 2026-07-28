@@ -1,4 +1,4 @@
-package net.konn.primordial.event;
+package net.konn.primordial.temperature;
 
 public final class TemperatureConstants {
 

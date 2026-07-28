@@ -2,6 +2,7 @@ package net.konn.primordial.event;
 
 import net.konn.primordial.attachment.PrimordialAttachments;
 import net.konn.primordial.network.TemperatureSyncPayload;
+import net.konn.primordial.temperature.*;
 import net.konn.primordial.util.PrimordialTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,16 +29,13 @@ public final class TemperatureHandler {
     private static final int COLD_DAMAGE_INTERVAL_TICKS = 40;
     private static final float COLD_DAMAGE = 1.0F;
     private static final int UPDATE_INTERVAL_TICKS = 10;
-    private static final int MAX_HEAT =
-            TemperatureConstants.MAX_EXPOSURE;
-
-    private static final int MAX_COLD =
-            TemperatureConstants.MAX_EXPOSURE;
+    private static final int MAX_HEAT = TemperatureConstants.MAX_EXPOSURE;
+    private static final int WATER_COOLING_STEP = 3;
+    private static final int MAX_COLD = TemperatureConstants.MAX_EXPOSURE;
     private static final int EXPOSURE_STEP = 1;
     private static final int RECOVERY_STEP = 3;
     private static final int HEAT_DAMAGE_INTERVAL_TICKS = 40;
     private static final float HEAT_DAMAGE = 1.0F;
-
     private static final int ROOM_HORIZONTAL_RADIUS = 10;
     private static final int ROOM_DOWN_RADIUS = 4;
     private static final int ROOM_UP_RADIUS = 6;
@@ -87,6 +85,38 @@ public final class TemperatureHandler {
         player.hurt(
                 player.damageSources().freeze(),
                 COLD_DAMAGE
+        );
+    }
+    private ExposureState applyHeatSource(
+            int heat,
+            int cold,
+            HeatSource source
+    ) {
+        int remainingChange =
+                source.changePerUpdate();
+
+        if (cold > 0) {
+            int removedCold = Math.min(
+                    cold,
+                    remainingChange
+            );
+
+            cold -= removedCold;
+            remainingChange -= removedCold;
+        }
+
+
+        if (remainingChange > 0
+                && heat < source.targetExposure()) {
+            heat = Math.min(
+                    source.targetExposure(),
+                    heat + remainingChange
+            );
+        }
+
+        return new ExposureState(
+                heat,
+                cold
         );
     }
 
@@ -183,6 +213,31 @@ public final class TemperatureHandler {
             cold = recoverExposure(cold);
         }
 
+        HeatSource nearbyHeatSource =
+                findStrongestHeatSource(
+                        level,
+                        player.blockPosition()
+                );
+
+        if (nearbyHeatSource != null) {
+            ExposureState warmedState = applyHeatSource(
+                    heat,
+                    cold,
+                    nearbyHeatSource
+            );
+
+            heat = warmedState.heat();
+            cold = warmedState.cold();
+        }
+
+
+        if (player.isInWater()) {
+            heat = Math.max(
+                    0,
+                    heat - WATER_COOLING_STEP
+            );
+        }
+
         finishUpdate(
                 player,
                 oldHeat,
@@ -190,6 +245,95 @@ public final class TemperatureHandler {
                 oldCold,
                 cold
         );
+    }
+
+    private HeatSource findStrongestHeatSource(
+            ServerLevel level,
+            BlockPos center
+    ) {
+        int maximumRadius =
+                HeatSourceRegistry.getMaximumRadius();
+
+        if (maximumRadius <= 0) {
+            return null;
+        }
+
+        if (!level.isAreaLoaded(center, maximumRadius)) {
+            return null;
+        }
+
+        HeatSource strongest = null;
+        int strongestDistanceSquared = Integer.MAX_VALUE;
+
+        BlockPos minimum = center.offset(
+                -maximumRadius,
+                -maximumRadius,
+                -maximumRadius
+        );
+
+        BlockPos maximum = center.offset(
+                maximumRadius,
+                maximumRadius,
+                maximumRadius
+        );
+
+        for (BlockPos sourcePos :
+                BlockPos.betweenClosed(minimum, maximum)) {
+
+            BlockState state =
+                    level.getBlockState(sourcePos);
+
+            HeatSource candidate =
+                    HeatSourceRegistry.getActive(state);
+
+            if (candidate == null) {
+                continue;
+            }
+
+            int dx = sourcePos.getX() - center.getX();
+            int dy = sourcePos.getY() - center.getY();
+            int dz = sourcePos.getZ() - center.getZ();
+
+            int distanceSquared =
+                    dx * dx + dy * dy + dz * dz;
+
+            int candidateRadiusSquared =
+                    candidate.radius() * candidate.radius();
+
+            if (distanceSquared > candidateRadiusSquared) {
+                continue;
+            }
+
+            boolean strongerTarget =
+                    strongest == null
+                            || candidate.targetExposure()
+                            > strongest.targetExposure();
+
+            boolean fasterAtSameTarget =
+                    strongest != null
+                            && candidate.targetExposure()
+                            == strongest.targetExposure()
+                            && candidate.changePerUpdate()
+                            > strongest.changePerUpdate();
+
+            boolean closerAtSamePower =
+                    strongest != null
+                            && candidate.targetExposure()
+                            == strongest.targetExposure()
+                            && candidate.changePerUpdate()
+                            == strongest.changePerUpdate()
+                            && distanceSquared
+                            < strongestDistanceSquared;
+
+            if (strongerTarget
+                    || fasterAtSameTarget
+                    || closerAtSamePower) {
+                strongest = candidate;
+                strongestDistanceSquared = distanceSquared;
+            }
+        }
+
+        return strongest;
     }
     private void maintainCustomFreezing(ServerPlayer player) {
         if (player.getInBlockState().is(Blocks.POWDER_SNOW)) {
@@ -422,5 +566,10 @@ public final class TemperatureHandler {
         }
 
         return state.getCollisionShape(level, pos).isEmpty();
+    }
+    private record ExposureState(
+            int heat,
+            int cold
+    ) {
     }
 }

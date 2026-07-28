@@ -9,7 +9,9 @@ import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.conditions.IConditionBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -20,7 +22,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
     }
 
     @Override
-    protected void buildRecipes(RecipeOutput recipeOutput) {
+    protected void buildRecipes(@NotNull RecipeOutput recipeOutput) {
         List<ItemLike> cassiteriteSmeltables = List.of(Primordial_Items.RAW_CASSITERITE,
                 Primordial_Blocks.GNEIS_CASSITERITE_ORE);
 
@@ -30,6 +32,29 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("AAA")
                 .pattern("AAA")
                 .unlockedBy("has_tin",has(Primordial_Items.TIN_INGOT.get())).save(recipeOutput);
+        //ARMOR
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, Primordial_Items.WOOL_HELMET.get())
+                .define('A', Blocks.WHITE_WOOL)
+                .pattern("AAA")
+                .pattern("A A")
+                .unlockedBy("has_wool",has(Blocks.WHITE_WOOL)).save(recipeOutput);
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, Primordial_Items.WOOL_CHESTPLATE.get())
+                .define('A', Blocks.WHITE_WOOL)
+                .pattern("A A")
+                .pattern("AAA")
+                .pattern("AAA")
+                .unlockedBy("has_wool",has(Blocks.WHITE_WOOL)).save(recipeOutput);
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, Primordial_Items.WOOL_LEGGINGS.get())
+                .define('A', Blocks.WHITE_WOOL)
+                .pattern("AAA")
+                .pattern("A A")
+                .pattern("A A")
+                .unlockedBy("has_wool",has(Blocks.WHITE_WOOL)).save(recipeOutput);
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, Primordial_Items.WOOL_BOOTS.get())
+                .define('A', Blocks.WHITE_WOOL)
+                .pattern("A A")
+                .pattern("A A")
+                .unlockedBy("has_wool",has(Blocks.WHITE_WOOL)).save(recipeOutput);
         //PRIMAL TOOLS
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, Primordial_Items.PRIMAL_SWORD.get())
                 .define('A', Primordial_Items.SHARPENED_ROCK.get())

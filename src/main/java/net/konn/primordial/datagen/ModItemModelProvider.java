@@ -35,6 +35,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         handheldItem(Primordial_Items.PRIMAL_SHOVEL.get());
         handheldItem(Primordial_Items.PRIMAL_HOE.get());
         handheldItem(Primordial_Items.STONE_HAMMER.get());
+        //ARMOR
+        basicItem(Primordial_Items.WOOL_BOOTS.get());
+        basicItem(Primordial_Items.WOOL_CHESTPLATE.get());
+        basicItem(Primordial_Items.WOOL_LEGGINGS.get());
+        basicItem(Primordial_Items.WOOL_HELMET.get());
         //EBONY WOOD
         basicItem(Primordial_Blocks.EBONY_TRAPDOOR.asItem());
         buttonItem(Primordial_Blocks.EBONY_BUTTON, Primordial_Blocks.EBONY_PLANKS);
@@ -57,10 +62,5 @@ public class ModItemModelProvider extends ItemModelProvider {
         this.withExistingParent(block.getId().getPath(), mcLoc("block/wall_inventory"))
                 .texture("wall",  ResourceLocation.fromNamespaceAndPath(PrimordialMod.MOD_ID,
                         "block/" + baseBlock.getId().getPath()));
-    }
-    private ItemModelBuilder handheldItem(DeferredItem<Item> item) {
-        return withExistingParent(item.getId().getPath(),
-                ResourceLocation.parse("item/handheld")).texture("layer0",
-                ResourceLocation.fromNamespaceAndPath(PrimordialMod.MOD_ID,"item/" + item.getId().getPath()));
     }
 }

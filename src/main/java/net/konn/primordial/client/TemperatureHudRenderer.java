@@ -2,7 +2,7 @@ package net.konn.primordial.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.konn.primordial.PrimordialMod;
-import net.konn.primordial.event.TemperatureConstants;
+import net.konn.primordial.temperature.TemperatureConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
