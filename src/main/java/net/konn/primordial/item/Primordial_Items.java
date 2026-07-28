@@ -53,24 +53,56 @@ public class Primordial_Items {
     //ARMOR
 
     public static final DeferredItem<Item> WOOL_HELMET =
-            ITEMS.register("wool_helmet", () -> new TemperatureArmorItem(Primordial_ArmorMaterials.WOOL,
-                            ArmorItem.Type.HELMET, 3, new Item.Properties().durability(
-                                    ArmorItem.Type.HELMET.getDurability(3))));
+            ITEMS.register(
+                    "wool_helmet",
+                    () -> new TemperatureArmorItem(
+                            Primordial_ArmorMaterials.WOOL,
+                            ArmorItem.Type.HELMET,
+                            40,
+                            new Item.Properties().durability(
+                                    ArmorItem.Type.HELMET.getDurability(3)
+                            )
+                    )
+            );
 
     public static final DeferredItem<Item> WOOL_CHESTPLATE =
-            ITEMS.register("wool_chestplate", () -> new TemperatureArmorItem(Primordial_ArmorMaterials.WOOL,
-                            ArmorItem.Type.CHESTPLATE, 8, new Item.Properties().durability(
-                                    ArmorItem.Type.CHESTPLATE.getDurability(3))));
+            ITEMS.register(
+                    "wool_chestplate",
+                    () -> new TemperatureArmorItem(
+                            Primordial_ArmorMaterials.WOOL,
+                            ArmorItem.Type.CHESTPLATE,
+                            60,
+                            new Item.Properties().durability(
+                                    ArmorItem.Type.CHESTPLATE.getDurability(3)
+                            )
+                    )
+            );
 
     public static final DeferredItem<Item> WOOL_LEGGINGS =
-            ITEMS.register("wool_leggings", () -> new TemperatureArmorItem(Primordial_ArmorMaterials.WOOL,
-                            ArmorItem.Type.LEGGINGS, 6, new Item.Properties().durability(
-                                    ArmorItem.Type.LEGGINGS.getDurability(3))));
+            ITEMS.register(
+                    "wool_leggings",
+                    () -> new TemperatureArmorItem(
+                            Primordial_ArmorMaterials.WOOL,
+                            ArmorItem.Type.LEGGINGS,
+                            50,
+                            new Item.Properties().durability(
+                                    ArmorItem.Type.LEGGINGS.getDurability(3)
+                            )
+                    )
+            );
 
     public static final DeferredItem<Item> WOOL_BOOTS =
-            ITEMS.register("wool_boots", () -> new TemperatureArmorItem(Primordial_ArmorMaterials.WOOL,
-                            ArmorItem.Type.BOOTS, 3, new Item.Properties().durability(
-                                    ArmorItem.Type.BOOTS.getDurability(3))));
+            ITEMS.register(
+                    "wool_boots",
+                    () -> new TemperatureArmorItem(
+                            Primordial_ArmorMaterials.WOOL,
+                            ArmorItem.Type.BOOTS,
+                            40,
+                            new Item.Properties().durability(
+                                    ArmorItem.Type.BOOTS.getDurability(3)
+                            )
+                    )
+            );
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

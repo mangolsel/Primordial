@@ -61,7 +61,8 @@ public final class TemperatureHandler {
             return;
         }
 
-        if (player.tickCount % COLD_DAMAGE_INTERVAL_TICKS != 0) {
+        if (player.tickCount
+                % COLD_DAMAGE_INTERVAL_TICKS != 0) {
             return;
         }
 
@@ -73,14 +74,14 @@ public final class TemperatureHandler {
                 PrimordialAttachments.COLD_EXPOSURE
         );
 
-        ExposureState effective =
+        ExposureState effectiveExposure =
                 getEffectiveExposure(
                         player,
                         rawHeat,
                         rawCold
                 );
 
-        if (effective.cold()
+        if (effectiveExposure.cold()
                 < TemperatureConstants.DAMAGE_THRESHOLD) {
             return;
         }
@@ -359,22 +360,22 @@ public final class TemperatureHandler {
                 PrimordialAttachments.COLD_EXPOSURE
         );
 
-        ExposureState effective =
+        ExposureState effectiveExposure =
                 getEffectiveExposure(
                         player,
                         rawHeat,
                         rawCold
                 );
 
-        int coldExposure = effective.cold();
+        int effectiveCold =
+                effectiveExposure.cold();
 
         int requiredTicks =
                 player.getTicksRequiredToFreeze();
 
         float freezeProgress = Mth.clamp(
-                coldExposure
-                        / (float) TemperatureConstants
-                        .DAMAGE_THRESHOLD,
+                effectiveCold
+                        / (float) TemperatureConstants.DAMAGE_THRESHOLD,
                 0.0F,
                 1.0F
         );
@@ -383,6 +384,11 @@ public final class TemperatureHandler {
                 freezeProgress * requiredTicks
         );
 
+        /*
+         * Поднимаем значение до нужной отметки.
+         * Когда одежда уменьшает целевое значение,
+         * ванильное размораживание постепенно его опустит.
+         */
         if (player.getTicksFrozen() < targetFrozenTicks) {
             player.setTicksFrozen(targetFrozenTicks);
         }
@@ -402,6 +408,9 @@ public final class TemperatureHandler {
             int oldCold,
             int newCold
     ) {
+        /*
+         * В attachments сохраняется температура среды.
+         */
         if (newHeat != oldHeat) {
             player.setData(
                     PrimordialAttachments.HEAT_EXPOSURE,
@@ -416,7 +425,11 @@ public final class TemperatureHandler {
             );
         }
 
-        ExposureState effective =
+        /*
+         * Для HUD, визуальных эффектов и урона
+         * учитываем экипированную одежду.
+         */
+        ExposureState effectiveExposure =
                 getEffectiveExposure(
                         player,
                         newHeat,
@@ -426,12 +439,12 @@ public final class TemperatureHandler {
         PacketDistributor.sendToPlayer(
                 player,
                 new TemperatureSyncPayload(
-                        effective.heat(),
-                        effective.cold()
+                        effectiveExposure.heat(),
+                        effectiveExposure.cold()
                 )
         );
 
-        if (effective.heat()
+        if (effectiveExposure.heat()
                 >= TemperatureConstants.DAMAGE_THRESHOLD
                 && player.tickCount
                 % HEAT_DAMAGE_INTERVAL_TICKS == 0) {
@@ -607,13 +620,17 @@ public final class TemperatureHandler {
             int rawHeat,
             int rawCold
     ) {
-        int clothingModifier =
+        int equipmentModifier =
                 TemperatureEquipment.getTotalModifier(player);
 
+        /*
+         * Положительное итоговое число — жара.
+         * Отрицательное — холод.
+         */
         int signedTemperature =
                 rawHeat
                         - rawCold
-                        + clothingModifier;
+                        + equipmentModifier;
 
         signedTemperature = Mth.clamp(
                 signedTemperature,
@@ -621,15 +638,9 @@ public final class TemperatureHandler {
                 TemperatureConstants.MAX_EXPOSURE
         );
 
-        int effectiveHeat =
-                Math.max(0, signedTemperature);
-
-        int effectiveCold =
-                Math.max(0, -signedTemperature);
-
         return new ExposureState(
-                effectiveHeat,
-                effectiveCold
+                Math.max(0, signedTemperature),
+                Math.max(0, -signedTemperature)
         );
     }
 }
