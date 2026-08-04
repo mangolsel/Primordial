@@ -42,6 +42,7 @@ public final class TemperatureHandler {
     private static final int MAX_VISITED_ROOM_BLOCKS = 4096;
     private static final int EQUIPMENT_WARMING_STEP = 1;
     private static final int EQUIPMENT_COOLING_STEP = 4;
+    private static final int EQUIPMENT_POWER_DIVISOR = 50;
 
     @SubscribeEvent
     public void onPlayerTick(PlayerTickEvent.Post event) {
@@ -78,7 +79,6 @@ public final class TemperatureHandler {
 
         ExposureState effectiveExposure =
                 getEffectiveExposure(
-                        player,
                         rawHeat,
                         rawCold
                 );
@@ -250,6 +250,15 @@ public final class TemperatureHandler {
             heat = warmedState.heat();
             cold = warmedState.cold();
         }
+        ExposureState equipmentState =
+                applyEquipmentTemperature(
+                        player,
+                        heat,
+                        cold
+                );
+
+        heat = equipmentState.heat();
+        cold = equipmentState.cold();
 
 
         if (player.isInWater()) {
@@ -371,7 +380,6 @@ public final class TemperatureHandler {
 
         ExposureState effectiveExposure =
                 getEffectiveExposure(
-                        player,
                         rawHeat,
                         rawCold
                 );
@@ -429,7 +437,6 @@ public final class TemperatureHandler {
 
         ExposureState effectiveExposure =
                 getEffectiveExposure(
-                        player,
                         newHeat,
                         newCold
                 );
@@ -614,21 +621,11 @@ public final class TemperatureHandler {
     ) {
     }
     private ExposureState getEffectiveExposure(
-            ServerPlayer player,
             int rawHeat,
             int rawCold
     ) {
-        int equipmentModifier = player.getData(
-                Temperies_Attachments.APPLIED_EQUIPMENT_MODIFIER
-        );
-
-        int signedTemperature =
-                rawHeat
-                        - rawCold
-                        + equipmentModifier;
-
-        signedTemperature = Mth.clamp(
-                signedTemperature,
+        int signedTemperature = Mth.clamp(
+                rawHeat - rawCold,
                 -TemperatureConstants.MAX_EXPOSURE,
                 TemperatureConstants.MAX_EXPOSURE
         );
@@ -667,5 +664,53 @@ public final class TemperatureHandler {
                     newModifier
             );
         }
+    }
+    private ExposureState applyEquipmentTemperature(
+            ServerPlayer player,
+            int heat,
+            int cold
+    ) {
+        int targetModifier =
+                TemperatureEquipment.getTotalModifier(player);
+
+        int appliedModifier = player.getData(
+                Temperies_Attachments.APPLIED_EQUIPMENT_MODIFIER
+        );
+
+        if (targetModifier > 0) {
+            int warmingPower = Math.max(
+                    1,
+                    Mth.ceil(
+                            targetModifier
+                                    / (float) EQUIPMENT_POWER_DIVISOR
+                    )
+            );
+
+            int remainingWarmth = warmingPower;
+
+            if (cold > 0) {
+                int removedCold = Math.min(
+                        cold,
+                        remainingWarmth
+                );
+
+                cold -= removedCold;
+                remainingWarmth -= removedCold;
+            }
+
+            if (remainingWarmth > 0
+                    && heat < appliedModifier) {
+
+                heat = Math.min(
+                        appliedModifier,
+                        heat + remainingWarmth
+                );
+            }
+        }
+
+        return new ExposureState(
+                heat,
+                cold
+        );
     }
 }
