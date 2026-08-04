@@ -1,0 +1,18 @@
+{
+  "itemsGroup.temperies.temperies_items_tab": "Temperies Items",
+  "itemsGroup.temperies.temperies_blocks_tab": "Temperies Blocks",
+  "itemsGroup.temperies.temperies_instruments_tab": "Temperies Instruments",
+
+  "item.temperies.peat": "Peat",
+
+  "item.temperies.wool_helmet": "Wool Helmet",
+  "item.temperies.wool_chestplate": "Wool Chestplate",
+  "item.temperies.wool_leggings": "Wool Leggings",
+  "item.temperies.wool_boots": "Wool Boots",
+
+  "block.temperies.peat_block": "Peat Block",
+
+  "tooltip.temperies.temperature_modifier.positive": "Plus %s to temperature",
+  "tooltip.temperies.temperature_modifier.negative": "Minus %s to temperature"
+
+}

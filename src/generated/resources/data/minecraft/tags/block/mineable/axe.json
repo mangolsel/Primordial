@@ -1,13 +1,3 @@
 {
-  "values": [
-    "primordial:ebony_planks",
-    "primordial:ebony_slab",
-    "primordial:ebony_stairs",
-    "primordial:ebony_button",
-    "primordial:ebony_fence_gate",
-    "primordial:ebony_fence",
-    "primordial:ebony_trapdoor",
-    "primordial:ebony_door",
-    "primordial:ebony_pressure_plate"
-  ]
+  "values": []
 }

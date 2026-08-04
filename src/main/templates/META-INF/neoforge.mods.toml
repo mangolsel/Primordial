@@ -45,7 +45,7 @@ displayName="${mod_name}" #mandatory
 authors="Konn"
 
 # The description text for the mod (multi line!) (#mandatory)
-description="Primordial will make your survival much harder and creative."
+description="Temperies addes temperature to all biomes."
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
 #[[mixins]]
