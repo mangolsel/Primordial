@@ -32,6 +32,14 @@ public final class Temperies_Attachments {
                             .serialize(Codec.INT)
                             .build()
             );
+    public static final Supplier<AttachmentType<Integer>> APPLIED_EQUIPMENT_MODIFIER =
+            ATTACHMENT_TYPES.register(
+                    "applied_equipment_modifier",
+                    () -> AttachmentType
+                            .builder(() -> 0)
+                            .serialize(Codec.INT)
+                            .build()
+            );
 
     private Temperies_Attachments() {
     }

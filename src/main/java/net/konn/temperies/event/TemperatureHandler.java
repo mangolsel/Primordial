@@ -40,6 +40,8 @@ public final class TemperatureHandler {
     private static final int ROOM_DOWN_RADIUS = 4;
     private static final int ROOM_UP_RADIUS = 6;
     private static final int MAX_VISITED_ROOM_BLOCKS = 4096;
+    private static final int EQUIPMENT_WARMING_STEP = 1;
+    private static final int EQUIPMENT_COOLING_STEP = 4;
 
     @SubscribeEvent
     public void onPlayerTick(PlayerTickEvent.Post event) {
@@ -155,6 +157,11 @@ public final class TemperatureHandler {
 
             player.setTicksFrozen(0);
 
+            player.setData(
+                    Temperies_Attachments.APPLIED_EQUIPMENT_MODIFIER,
+                    0
+            );
+
             finishUpdate(
                     player,
                     oldHeat,
@@ -165,6 +172,8 @@ public final class TemperatureHandler {
 
             return;
         }
+
+        updateEquipmentModifier(player);
 
         Holder<Biome> biome = level.getBiome(
                 player.blockPosition()
@@ -609,8 +618,9 @@ public final class TemperatureHandler {
             int rawHeat,
             int rawCold
     ) {
-        int equipmentModifier =
-                TemperatureEquipment.getTotalModifier(player);
+        int equipmentModifier = player.getData(
+                Temperies_Attachments.APPLIED_EQUIPMENT_MODIFIER
+        );
 
         int signedTemperature =
                 rawHeat
@@ -627,5 +637,35 @@ public final class TemperatureHandler {
                 Math.max(0, signedTemperature),
                 Math.max(0, -signedTemperature)
         );
+    }
+    private void updateEquipmentModifier(ServerPlayer player) {
+        int currentModifier = player.getData(
+                Temperies_Attachments.APPLIED_EQUIPMENT_MODIFIER
+        );
+
+        int targetModifier =
+                TemperatureEquipment.getTotalModifier(player);
+
+        int newModifier = currentModifier;
+
+        if (currentModifier < targetModifier) {
+            newModifier = Math.min(
+                    currentModifier + EQUIPMENT_WARMING_STEP,
+                    targetModifier
+            );
+
+        } else if (currentModifier > targetModifier) {
+            newModifier = Math.max(
+                    currentModifier - EQUIPMENT_COOLING_STEP,
+                    targetModifier
+            );
+        }
+
+        if (newModifier != currentModifier) {
+            player.setData(
+                    Temperies_Attachments.APPLIED_EQUIPMENT_MODIFIER,
+                    newModifier
+            );
+        }
     }
 }
